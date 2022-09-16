@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "giphy-namesake": {
+    "giphy-challenge": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/giphy-namesake",
+            "outputPath": "dist/giphy-challenge",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -69,10 +69,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "giphy-namesake:build:production"
+              "browserTarget": "giphy-challenge:build:production"
             },
             "development": {
-              "browserTarget": "giphy-namesake:build:development"
+              "browserTarget": "giphy-challenge:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -80,7 +80,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "giphy-namesake:build"
+            "browserTarget": "giphy-challenge:build"
           }
         },
         "test": {
