@@ -2,7 +2,7 @@
     <p>search-result works!</p>
     <p>{{ searchQuery$ | async }}</p>
     <!-- <p>{{ searchResult.title }}</p> -->
-    <div class="columns-2 md:columns-3 lg:columns-5">
-        <video loop autoplay class="w-52" *ngFor="let searchResult of (searchResults$ | async)?.images" [src]="searchResult.preview.mp4"></video>
+    <div class="columns-2 md:columns-3 lg:columns-5 gap-x-4">
+        <video loop autoplay class="w-64 mb-4" *ngFor="let searchResult of (searchResults$ | async)?.images" [src]="searchResult.preview.mp4"></video>
     </div>
 </div>
