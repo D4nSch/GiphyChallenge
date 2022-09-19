@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  title = 'giphy-namesake';
+  title = 'giphy-challenge';
 
   constructor(private router: Router) { }
 

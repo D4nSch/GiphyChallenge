@@ -11,6 +11,12 @@ import { map, tap } from 'rxjs';
 export class GiphyService {
   router: any;
 
+  searchQuery = "";
+  searchResult: ReducedGif[] = [];
+  // GIFs per search/scroll
+  searchLimit = 35;
+  searchOffset = 0;
+
   constructor(private http: HttpClient, private dataservice: DataService) { }
 
   getTrendingGifs(limit: number, offset: number) {
@@ -22,21 +28,52 @@ export class GiphyService {
     return this.http.get<GiphyResponse>(environment.gTrendingGifsUrl, {params});
   }
 
-  getSearchGifs(searchQuery: string, limit: number, offset: number) {
+  getSearchGifs(searchQuery: string) {
     const params = new HttpParams()
     .set('api_key', environment.gApiKey)
     .set('q', searchQuery)
-    .set('limit', limit)
-    .set('offset', offset);
+    .set('limit', this.searchLimit)
+    .set('offset', 0);
     
-    return this.http.get<GiphyResponse>(environment.gSearchGifsUrl, {params}).pipe(
+    return this.http.get<GiphyResponse>(environment.gSearchGifsUrl, {params})
+    .pipe(
       tap((giphyResponse) => {
-        console.group("%c GifIt: giphyResponse "+"", "color: #43F2A7");
+        console.group("%c GifIt: Search | giphyResponse "+"", "color: #43F2A7");
           console.log(giphyResponse)
         console.groupEnd();
       }),
-      map((giphyResponse) => this.reduceGiphyResponse(giphyResponse))
+      map((giphyResponse) => this.reduceGiphyResponse(giphyResponse)),
+      tap((reducedGiphyResponse) => {
+        this.searchQuery = searchQuery;
+        this.searchResult = [...reducedGiphyResponse.images]
+        this.searchOffset = reducedGiphyResponse.pagination.count+reducedGiphyResponse.pagination.offset;
+      })
     );
+  }
+    
+  getNextGifs() {
+    const params = new HttpParams()
+    .set('api_key', environment.gApiKey)
+    .set('q', this.searchQuery)
+    .set('limit', this.searchLimit)
+    .set('offset', this.searchOffset);
+    
+    this.http.get<GiphyResponse>(environment.gSearchGifsUrl, {params}).pipe(
+      tap((giphyResponse) => {
+        console.group("%c GifIt: Scroll | giphyResponse "+"", "color: #43F2A7");
+        console.log(giphyResponse)
+        console.groupEnd();
+      }),
+      map((giphyResponse) => this.reduceGiphyResponse(giphyResponse)),
+      tap((reducedGiphyResponse) => {
+        this.searchResult = [...this.searchResult, ...reducedGiphyResponse.images];
+        this.searchOffset = this.searchOffset+reducedGiphyResponse.images.length;
+      })
+    )
+    .subscribe((reducedGiphyResponse) => {
+      reducedGiphyResponse.images = this.searchResult;
+      this.dataservice.setSearchResults$(reducedGiphyResponse);
+    });
   }
 
   // stripping the GiphyResponse of unnecessary stuff
