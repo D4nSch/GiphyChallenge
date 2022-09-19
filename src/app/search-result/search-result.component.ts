@@ -2,6 +2,7 @@ import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/
 import { filter, map, Observable, of, Subject, switchMap, takeUntil, tap } from 'rxjs';
 import { DataService } from '../services/data.service';
 import { GiphyService } from '../services/giphy.service';
+import { LoaderService } from '../services/loader.service';
 
 @Component({
   selector: 'app-search-result',
@@ -14,6 +15,8 @@ export class SearchResultComponent implements OnInit, OnDestroy {
   searchQuery$ = this.dataservice.getSearchQuery$();
   totalCount = 0;
 
+  isLoading = this.loaderService.isLoading;
+
   private readonly destroy$ = new Subject<void>();
 
   @HostListener('window:scroll')
@@ -23,7 +26,7 @@ export class SearchResultComponent implements OnInit, OnDestroy {
     }
   }
 
-  constructor(private dataservice: DataService, private giphyService: GiphyService) { }
+  constructor(private dataservice: DataService, private giphyService: GiphyService, private loaderService: LoaderService) { }
   
   ngOnInit() {
     this.dataservice.getSearchQuery$()
