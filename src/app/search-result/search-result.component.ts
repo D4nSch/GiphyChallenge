@@ -3,6 +3,7 @@ import { filter, map, Observable, of, Subject, switchMap, takeUntil, tap } from 
 import { DataService } from '../services/data.service';
 import { GiphyService } from '../services/giphy.service';
 import { LoaderService } from '../services/loader.service';
+import { NgxMasonryComponent, NgxMasonryOptions } from 'ngx-masonry';
 
 @Component({
   selector: 'app-search-result',
@@ -10,7 +11,8 @@ import { LoaderService } from '../services/loader.service';
   styleUrls: ['./search-result.component.scss']
 })
 export class SearchResultComponent implements OnInit, OnDestroy {
-
+  @ViewChild(NgxMasonryComponent) masonry?: NgxMasonryComponent;
+  
   searchResults$ = this.dataservice.getSearchResults$();
   searchQuery$ = this.dataservice.getSearchQuery$();
   totalCount = 0;
@@ -22,7 +24,10 @@ export class SearchResultComponent implements OnInit, OnDestroy {
   @HostListener('window:scroll')
   onScroll() {
     if ((window.innerHeight + window.scrollY) >= document.body.scrollHeight) {
-      this.giphyService.getNextGifs();
+      // Prevent multiple loads
+      if(this.loaderService.isLoading.getValue() === false) {
+        this.giphyService.getNextGifs();
+      }
     }
   }
 
@@ -48,5 +53,13 @@ export class SearchResultComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  // ngx-masonry seems to have trouble with undefined heights (overlapping)
+  fixLayout() {
+    if (this.masonry !== undefined) {
+      // this.masonry.reloadItems();
+      this.masonry.layout();
+    }
   }
 }
