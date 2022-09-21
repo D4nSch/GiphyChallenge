@@ -2,10 +2,21 @@
     <p>search-result works!</p>
     <p>{{ searchQuery$ | async }}</p>
     <p>{{ totalCount }}</p>
-    <!-- <p>{{ searchResult.title }}</p> -->
-    <div class="columns-2 md:columns-3 lg:columns-6 gap-x-4">
-        <video loop autoplay class="w-64 mb-4" *ngFor="let searchResult of (searchResults$ | async)?.images" [src]="searchResult.preview.mp4"></video>
-    </div>
+    <!-- https://www.npmjs.com/package/ngx-masonry - not updated to Angular 13 & 14... also grid-template-rows: masonry not supported by most browsers. Use TailwindCss instead. -->
+    <!-- <div class="columns-2 md:columns-3 lg:columns-6 gap-x-4">
+        <div *ngFor="let searchResult of (searchResults$ | async)?.images">
+            <div class="relative">
+                <video loop autoplay class="w-64 mb-4" [src]="searchResult.preview.mp4"></video>
+            </div>
+        </div>
+    </div> -->
+    
+    <ngx-masonry (layoutComplete)="fixLayout()" [options]="{ gutter: 10 }">
+        <div ngxMasonryItem class="bg-yellow-300 min-h-fit mb-2.5" *ngFor="let searchResult of (searchResults$ | async)?.images">
+            <object class="w-12 absolute bottom-0" data="../../assets/heart.svg" type="image/svg+xml"></object>
+            <video autoplay loop class="w-60 min-h-fit" [src]="searchResult.preview.mp4"></video>
+        </div>
+    </ngx-masonry>
     <div class="bg-yellow-300 h-24 flex flew-row justify-center items-center">
         <div *ngIf="isLoading | async" class="lds-facebook scale-150"><div></div><div></div><div></div></div>
     </div>
