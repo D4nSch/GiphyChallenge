@@ -20,10 +20,17 @@ export class DataService {
   }
 
   addFavoriteGif$(favoriteGif: ReducedGif) {
-    let newFavoriteGifsList = this.favoriteGifs$.getValue().concat(favoriteGif);
+    let duplicateGifsList = this.favoriteGifs$.getValue().filter(gifEntry => gifEntry.id === favoriteGif.id);
 
-    localStorage.setItem("favoriteGifsList", JSON.stringify(newFavoriteGifsList));
-    this.favoriteGifs$.next(this.favoriteGifs$.getValue().concat(favoriteGif));
+    if(duplicateGifsList.length === 0) {
+      let newFavoriteGifsList = this.favoriteGifs$.getValue().concat(favoriteGif);
+      
+      localStorage.setItem("favoriteGifsList", JSON.stringify(newFavoriteGifsList));
+      this.favoriteGifs$.next(newFavoriteGifsList);
+    } else {
+      //TODO: add notification
+      console.log("GIF already in favorites!");
+    }
   }
 
   removeFavoriteGif$(favoriteGif: ReducedGif) {
