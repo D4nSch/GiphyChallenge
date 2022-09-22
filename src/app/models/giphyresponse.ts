@@ -43,6 +43,7 @@ interface Gif {
 
 interface ReducedGif {
     title: string,
+    id: string,
     preview: Images,
     original: Images
 }
