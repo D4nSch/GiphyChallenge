@@ -3,7 +3,7 @@ import { environment } from '../../environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Gif, GiphyResponse, ReducedGif } from '../models/giphyresponse';
 import { DataService } from './data.service';
-import { map, tap } from 'rxjs';
+import { map, Subject, take, tap } from 'rxjs';
 import { LoaderService } from './loader.service';
 
 @Injectable({
@@ -15,8 +15,9 @@ export class GiphyService {
   searchQuery = "";
   searchResult: ReducedGif[] = [];
   // GIFs per search/scroll
-  searchLimit = 35;
+  searchLimit = 25;
   searchOffset = 0;
+  searchTotalCount = 0;
   showLoaderTime = 750;
 
   constructor(private http: HttpClient, private dataservice: DataService, private loaderService: LoaderService) { }
@@ -49,6 +50,7 @@ export class GiphyService {
         this.searchQuery = searchQuery;
         this.searchResult = [...reducedGiphyResponse.images]
         this.searchOffset = reducedGiphyResponse.pagination.count+reducedGiphyResponse.pagination.offset;
+        this.searchTotalCount = reducedGiphyResponse.pagination.total_count;
       })
     );
   }
@@ -60,29 +62,34 @@ export class GiphyService {
     .set('limit', this.searchLimit)
     .set('offset', this.searchOffset);
     
-    this.http.get<GiphyResponse>(environment.gSearchGifsUrl, {params}).pipe(
-      tap((giphyResponse) => {
-        console.group("%c GifIt: Scroll | giphyResponse "+"", "color: #43F2A7");
-          console.log(giphyResponse)
-        console.groupEnd();
-      }),
-      map((giphyResponse) => this.reduceGiphyResponse(giphyResponse)),
-      tap((reducedGiphyResponse) => {
-        // Concat should be faster, because it's both an array
-        this.searchResult = this.searchResult.concat(reducedGiphyResponse.images);
-        // this.searchResult = [...this.searchResult, ...reducedGiphyResponse.images];
-        this.searchOffset = this.searchOffset+reducedGiphyResponse.images.length;
-        this.loaderService.show();
-      })
-    )
-    .subscribe(async (reducedGiphyResponse) => {
-      reducedGiphyResponse.images = this.searchResult;
+    if(this.searchTotalCount !== this.searchOffset) {
+      this.http.get<GiphyResponse>(environment.gSearchGifsUrl, {params}).pipe(
+        tap((giphyResponse) => {
+          console.group("%c GifIt: Scroll | giphyResponse "+"", "color: #43F2A7");
+            console.log(giphyResponse);
+          console.groupEnd();
+        }),
+        map((giphyResponse) => this.reduceGiphyResponse(giphyResponse)),
+        tap((reducedGiphyResponse) => {
+          // Concat should be faster, because it's both an array
+          this.searchResult = this.searchResult.concat(reducedGiphyResponse.images);
+          // this.searchResult = [...this.searchResult, ...reducedGiphyResponse.images];
+          this.searchOffset = this.searchOffset+reducedGiphyResponse.images.length;
+          this.loaderService.show();
+        }),
+        take(1)
+      )
+      .subscribe(async (reducedGiphyResponse) => {
+        reducedGiphyResponse.images = this.searchResult;
 
-      await new Promise(resolve => setTimeout(resolve, this.showLoaderTime)).then(() => {
-        this.loaderService.hide();
-        this.dataservice.setSearchResults$(reducedGiphyResponse);
+        await new Promise(resolve => setTimeout(resolve, this.showLoaderTime)).then(() => {
+          this.loaderService.hide();
+          this.dataservice.setSearchResults$(reducedGiphyResponse);
+        });
       });
-    });
+    } else {
+      console.log("No more gifs with this search query available!");
+    }
   }
 
   // stripping the GiphyResponse of unnecessary stuff
@@ -92,6 +99,7 @@ export class GiphyService {
     giphyResponse.data.forEach(gifItem => {
       let reducedGifItem = {
         "title": gifItem.title,
+        "id": gifItem.id,
         "preview": gifItem.images["preview"],
         "original": gifItem.images["original"]
       }
