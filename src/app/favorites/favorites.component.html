@@ -4,7 +4,7 @@
         <div ngxMasonryItem class="bg-yellow-300 min-h-fit mb-2.5" *ngFor="let favoriteGif of (favoriteGifs$ | async)">
             <!-- <pre>{{ searchResult | json }}</pre> -->
             <img class="w-12 absolute bottom-0" (click)="removeFavorite(favoriteGif)" src="../../assets/heart.svg" alt="heart">
-            <video autoplay loop class="w-60 min-h-fit" [src]="favoriteGif.preview.mp4"></video>
+            <video autoplay loop class="w-60 min-h-fit pointer-events-none" [src]="favoriteGif.preview.mp4"></video>
         </div>
     </ngx-masonry>
 </div>
