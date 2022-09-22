@@ -3,7 +3,8 @@ import { filter, map, Observable, of, Subject, switchMap, takeUntil, tap } from 
 import { DataService } from '../services/data.service';
 import { GiphyService } from '../services/giphy.service';
 import { LoaderService } from '../services/loader.service';
-import { NgxMasonryComponent, NgxMasonryOptions } from 'ngx-masonry';
+import { NgxMasonryComponent } from 'ngx-masonry';
+import { ReducedGif } from '../models/giphyresponse';
 
 @Component({
   selector: 'app-search-result',
@@ -11,7 +12,7 @@ import { NgxMasonryComponent, NgxMasonryOptions } from 'ngx-masonry';
   styleUrls: ['./search-result.component.scss']
 })
 export class SearchResultComponent implements OnInit, OnDestroy {
-  @ViewChild(NgxMasonryComponent) masonry?: NgxMasonryComponent;
+  @ViewChild('searchresult') masonry?: NgxMasonryComponent;
   
   searchResults$ = this.dataservice.getSearchResults$();
   searchQuery$ = this.dataservice.getSearchQuery$();
@@ -53,6 +54,11 @@ export class SearchResultComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  setFavorite(reducedGif: ReducedGif): void {
+    this.dataservice.addFavoriteGif$(reducedGif);
+    console.log("Added to favorites!");
   }
 
   // ngx-masonry seems to have trouble with undefined heights (overlapping)
