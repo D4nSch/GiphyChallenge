@@ -9,7 +9,5 @@
             <video autoplay loop class="w-60 min-h-fit pointer-events-none" [src]="searchResult.preview.mp4"></video>
         </div>
     </ngx-masonry>
-    <div class="bg-yellow-300 h-24 flex flew-row justify-center items-center">
-        <div *ngIf="isLoading | async" class="lds-facebook scale-150"><div></div><div></div><div></div></div>
-    </div>
+    <app-loader></app-loader>
 </div>

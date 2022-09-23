@@ -20,7 +20,6 @@ export class FavoritesComponent implements OnInit {
 
   removeFavorite(reducedGif: ReducedGif): void {
     this.dataservice.removeFavoriteGif$(reducedGif);
-    console.log("Removed from favorites!");
   }
 
   // ngx-masonry seems to have trouble with undefined heights (overlapping)

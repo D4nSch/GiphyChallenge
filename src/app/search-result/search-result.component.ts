@@ -5,32 +5,32 @@ import { GiphyService } from '../services/giphy.service';
 import { LoaderService } from '../services/loader.service';
 import { NgxMasonryComponent } from 'ngx-masonry';
 import { ReducedGif } from '../models/giphyresponse';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-search-result',
   templateUrl: './search-result.component.html',
-  styleUrls: ['./search-result.component.scss']
+  styleUrls: ['./search-result.component.scss'],
+  providers: [GiphyService]
 })
 export class SearchResultComponent implements OnInit, OnDestroy {
   @ViewChild('searchresult') masonry?: NgxMasonryComponent;
   
-  searchResults$ = this.dataservice.getSearchResults$();
-  searchQuery$ = this.dataservice.getSearchQuery$();
-  totalCount = 0;
-
-  isLoading = this.loaderService.isLoading;
-
-  private readonly destroy$ = new Subject<void>();
-
   @HostListener('window:scroll')
   onScroll() {
     if ((window.innerHeight + window.scrollY) >= document.body.scrollHeight) {
       // Prevent multiple loads
       if(this.loaderService.isLoading.getValue() === false) {
-        this.giphyService.getNextGifs();
+        this.giphyService.getNextGifs("search", environment.gSearchGifsUrl);
       }
     }
   }
+
+  searchResults$ = this.dataservice.getSearchResults$();
+  searchQuery$ = this.dataservice.getSearchQuery$();
+  totalCount = 0;
+
+  private readonly destroy$ = new Subject<void>();
 
   constructor(private dataservice: DataService, private giphyService: GiphyService, private loaderService: LoaderService) { }
   
@@ -58,7 +58,6 @@ export class SearchResultComponent implements OnInit, OnDestroy {
 
   setFavorite(reducedGif: ReducedGif): void {
     this.dataservice.addFavoriteGif$(reducedGif);
-    console.log("Added to favorites!");
   }
 
   // ngx-masonry seems to have trouble with undefined heights (overlapping)
