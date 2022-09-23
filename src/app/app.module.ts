@@ -13,6 +13,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgxMasonryModule } from 'ngx-masonry';
+import { LoaderComponent } from './loader/loader.component';
 
 @NgModule({
   declarations: [
@@ -24,6 +25,7 @@ import { NgxMasonryModule } from 'ngx-masonry';
     TrendingGifsOverviewComponent,
     ClipsComponent,
     SearchComponent,
+    LoaderComponent,
   ],
   imports: [
     BrowserModule,
