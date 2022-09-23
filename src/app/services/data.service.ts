@@ -13,6 +13,8 @@ export class DataService {
   // ReplaySubject(1) doesn't have an initial value until it is set with next, but emits last value on subscription
   // private searchResult$: Subject<GiphyResponse> = new ReplaySubject<GiphyResponse>(1);
   private searchResults$: Subject<ReducedGiphyResponse> = new Subject<ReducedGiphyResponse>;
+  private trendingResults$: Subject<ReducedGiphyResponse> = new Subject<ReducedGiphyResponse>;
+
   private favoriteGifs$: BehaviorSubject<ReducedGif[]> = new BehaviorSubject<ReducedGif[]>(JSON.parse(localStorage.getItem("favoriteGifsList")?.length ? localStorage.getItem("favoriteGifsList")! : "[]"));
 
   getFavoriteGifs$(): Observable<ReducedGif[]> {
@@ -38,6 +40,17 @@ export class DataService {
 
     localStorage.setItem("favoriteGifsList", JSON.stringify(newFavoriteGifsList));
     this.favoriteGifs$.next(newFavoriteGifsList);
+
+    //TODO: add notification
+    console.log("GIF removed from favorites!");
+  }
+
+  getTrendingResults$(): Observable<ReducedGiphyResponse> {
+    return this.trendingResults$.asObservable();
+  }
+
+  setTrendingResults$(trendingResults: ReducedGiphyResponse) {
+    this.trendingResults$.next(trendingResults);
   }
 
   getSearchResults$(): Observable<ReducedGiphyResponse> {

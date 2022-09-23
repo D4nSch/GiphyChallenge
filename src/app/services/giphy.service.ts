@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Gif, GiphyResponse, ReducedGif } from '../models/giphyresponse';
+import { map, take, tap } from 'rxjs';
+import { GiphyResponse, ReducedGif } from '../models/giphyresponse';
 import { DataService } from './data.service';
-import { map, Subject, take, tap } from 'rxjs';
 import { LoaderService } from './loader.service';
 
 @Injectable({
@@ -13,29 +13,20 @@ export class GiphyService {
   router: any;
 
   searchQuery = "";
-  searchResult: ReducedGif[] = [];
+  result: ReducedGif[] = [];
   // GIFs per search/scroll
-  searchLimit = 25;
-  searchOffset = 0;
-  searchTotalCount = 0;
+  limit = 25;
+  offset = 0;
+  totalCount = 0;
   showLoaderTime = 750;
 
   constructor(private http: HttpClient, private dataservice: DataService, private loaderService: LoaderService) { }
-
-  getTrendingGifs(limit: number, offset: number) {
-    const params = new HttpParams()
-    .set('api_key', environment.gApiKey)
-    .set('limit', limit)
-    .set('offset', offset);
-    
-    return this.http.get<GiphyResponse>(environment.gTrendingGifsUrl, {params});
-  }
-
+  
   getSearchGifs(searchQuery: string) {
     const params = new HttpParams()
     .set('api_key', environment.gApiKey)
     .set('q', searchQuery)
-    .set('limit', this.searchLimit)
+    .set('limit', this.limit)
     .set('offset', 0);
     
     return this.http.get<GiphyResponse>(environment.gSearchGifsUrl, {params})
@@ -48,22 +39,47 @@ export class GiphyService {
       map((giphyResponse) => this.reduceGiphyResponse(giphyResponse)),
       tap((reducedGiphyResponse) => {
         this.searchQuery = searchQuery;
-        this.searchResult = [...reducedGiphyResponse.images]
-        this.searchOffset = reducedGiphyResponse.pagination.count+reducedGiphyResponse.pagination.offset;
-        this.searchTotalCount = reducedGiphyResponse.pagination.total_count;
+        this.result = [...reducedGiphyResponse.images]
+        this.offset = reducedGiphyResponse.pagination.count+reducedGiphyResponse.pagination.offset;
+        this.totalCount = reducedGiphyResponse.pagination.total_count;
+      })
+    );
+  }
+
+  getTrendingGifs() {
+    const params = new HttpParams()
+    .set('api_key', environment.gApiKey)
+    .set('limit', this.limit)
+    .set('offset', this.offset);
+    
+    return this.http.get<GiphyResponse>(environment.gTrendingGifsUrl, {params})
+    .pipe(
+      tap((giphyResponse) => {
+        console.group("%c GifIt: Trending | giphyResponse "+"", "color: #43F2A7");
+          console.log(giphyResponse)
+        console.groupEnd();
+      }),
+      map((giphyResponse) => this.reduceGiphyResponse(giphyResponse)),
+      tap((reducedGiphyResponse) => {
+        this.result = [...reducedGiphyResponse.images]
+        this.offset = reducedGiphyResponse.pagination.count+reducedGiphyResponse.pagination.offset;
+        this.totalCount = reducedGiphyResponse.pagination.total_count;
       })
     );
   }
     
-  getNextGifs() {
-    const params = new HttpParams()
+  getNextGifs(category: string, url: string) {
+    let params = new HttpParams()
     .set('api_key', environment.gApiKey)
-    .set('q', this.searchQuery)
-    .set('limit', this.searchLimit)
-    .set('offset', this.searchOffset);
+    .set('limit', this.limit)
+    .set('offset', this.offset);
     
-    if(this.searchTotalCount !== this.searchOffset) {
-      this.http.get<GiphyResponse>(environment.gSearchGifsUrl, {params}).pipe(
+    if(category ===  "search") {
+      params = params.append('q', this.searchQuery)
+    } 
+    
+    if(this.totalCount !== this.offset) {
+      this.http.get<GiphyResponse>(url, {params}).pipe(
         tap((giphyResponse) => {
           console.group("%c GifIt: Scroll | giphyResponse "+"", "color: #43F2A7");
             console.log(giphyResponse);
@@ -72,19 +88,28 @@ export class GiphyService {
         map((giphyResponse) => this.reduceGiphyResponse(giphyResponse)),
         tap((reducedGiphyResponse) => {
           // Concat should be faster, because it's both an array
-          this.searchResult = this.searchResult.concat(reducedGiphyResponse.images);
+          this.result = this.result.concat(reducedGiphyResponse.images);
           // this.searchResult = [...this.searchResult, ...reducedGiphyResponse.images];
-          this.searchOffset = this.searchOffset+reducedGiphyResponse.images.length;
+          this.offset = this.offset+reducedGiphyResponse.images.length;
           this.loaderService.show();
         }),
         take(1)
       )
       .subscribe(async (reducedGiphyResponse) => {
-        reducedGiphyResponse.images = this.searchResult;
+        reducedGiphyResponse.images = this.result;
 
         await new Promise(resolve => setTimeout(resolve, this.showLoaderTime)).then(() => {
           this.loaderService.hide();
-          this.dataservice.setSearchResults$(reducedGiphyResponse);
+          switch (category) {
+            case "search":
+              this.dataservice.setSearchResults$(reducedGiphyResponse);
+              break;
+            case "trending":
+              this.dataservice.setTrendingResults$(reducedGiphyResponse);
+              break;
+            default:
+              break;
+          }
         });
       });
     } else {
