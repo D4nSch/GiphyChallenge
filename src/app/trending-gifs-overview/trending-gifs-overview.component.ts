@@ -5,6 +5,7 @@ import { environment } from '../../environments/environment';
 import { ReducedGif } from '../models/giphyresponse';
 import { DataService } from '../services/data.service';
 import { GiphyService } from '../services/giphy.service';
+import { LayoutUpdateService } from '../services/layout-update.service';
 import { LoaderService } from '../services/loader.service';
 
 @Component({
@@ -30,9 +31,19 @@ export class TrendingGifsOverviewComponent implements OnInit, OnDestroy {
   
   private readonly destroy$ = new Subject<void>();
 
-  constructor(private giphyService: GiphyService, private dataservice: DataService, private loaderService: LoaderService) { }
+  constructor(private giphyService: GiphyService, private dataservice: DataService, private loaderService: LoaderService, private layoutUpdateService: LayoutUpdateService) { }
 
   ngOnInit(): void {
+    this.layoutUpdateService.getLayoutUpdateTrigger$()
+    .pipe(
+      takeUntil(this.destroy$)
+    )
+    .subscribe(async () => {
+      let tries = 10;
+      for (let index = 0; index < tries; index++) {
+        await new Promise(resolve => setTimeout(resolve, 100)).then(() => this.fixLayout());
+      }
+    });
 
     this.giphyService.getTrendingGifs()
     .pipe(
@@ -40,6 +51,7 @@ export class TrendingGifsOverviewComponent implements OnInit, OnDestroy {
     )
     .subscribe((reducedTrendingResults) => {
       this.dataservice.setTrendingResults$(reducedTrendingResults);
+      this.layoutUpdateService.setLayoutUpdate$(true);
     })
   }
 
@@ -50,6 +62,7 @@ export class TrendingGifsOverviewComponent implements OnInit, OnDestroy {
 
   setFavorite(reducedGif: ReducedGif): void {
     this.dataservice.addFavoriteGif$(reducedGif);
+    this.layoutUpdateService.setLayoutUpdate$(true);
   }
 
   // ngx-masonry seems to have trouble with undefined heights (overlapping)

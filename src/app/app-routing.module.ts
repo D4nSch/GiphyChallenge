@@ -7,10 +7,10 @@ import { TrendingGifsOverviewComponent } from './trending-gifs-overview/trending
 
 const routes: Routes = [
   { path:'', component: TrendingCarouselComponent },
+  { path:'', component: ClipsComponent, pathMatch: 'full', outlet: 'addition' },
   { path:'trending-gifs', component: TrendingGifsOverviewComponent },
   { path:'clips', component: ClipsComponent },
-  { path:'search/:searchQuery', component: SearchResultComponent },
-  { path:'', component: ClipsComponent, pathMatch: 'full', outlet: 'addition' }
+  { path:'search/:searchQuery', component: SearchResultComponent }
 ];
 
 @NgModule({

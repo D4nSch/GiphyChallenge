@@ -1,6 +1,7 @@
 <div style="background-color: lightsalmon;">
     <p>FAVORITES</p>
-    <ngx-masonry (layoutComplete)="fixLayout()" [options]="{ gutter: 10 }" #favorites>
+    <!-- <ngx-masonry (layoutComplete)="fixLayout()" [options]="{ gutter: 10 }" #favorites> -->
+    <ngx-masonry [options]="{ gutter: 10 }" #favorites>
         <div ngxMasonryItem class="bg-yellow-300 min-h-fit mb-2.5" *ngFor="let favoriteGif of (favoriteGifs$ | async)">
             <!-- <pre>{{ searchResult | json }}</pre> -->
             <img class="w-12 absolute bottom-0" (click)="removeFavorite(favoriteGif)" src="../../assets/heart.svg" alt="heart">

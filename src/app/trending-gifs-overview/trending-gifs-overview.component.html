@@ -1,6 +1,7 @@
 <div style="background-color: lightpink">
     <p>trending-gifs-overview works!</p>
-    <ngx-masonry (layoutComplete)="fixLayout()" [options]="{ gutter: 10 }" #trending>
+    <!-- <ngx-masonry (layoutComplete)="fixLayout()" [options]="{ gutter: 10 }" #trending> -->
+    <ngx-masonry [options]="{ gutter: 10 }" #trending>
         <div ngxMasonryItem class="bg-yellow-300 min-h-fit mb-2.5" *ngFor="let trendingResult of (trendingResults$ | async)?.images">
             <!-- <pre>{{ searchResult | json }}</pre> -->
             <img class="w-12 absolute bottom-0" (click)="setFavorite(trendingResult)" src="../../assets/heart.svg" alt="heart">

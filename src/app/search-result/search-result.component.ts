@@ -6,6 +6,7 @@ import { LoaderService } from '../services/loader.service';
 import { NgxMasonryComponent } from 'ngx-masonry';
 import { ReducedGif } from '../models/giphyresponse';
 import { environment } from '../../environments/environment';
+import { LayoutUpdateService } from '../services/layout-update.service';
 
 @Component({
   selector: 'app-search-result',
@@ -32,9 +33,20 @@ export class SearchResultComponent implements OnInit, OnDestroy {
 
   private readonly destroy$ = new Subject<void>();
 
-  constructor(private dataservice: DataService, private giphyService: GiphyService, private loaderService: LoaderService) { }
+  constructor(private dataservice: DataService, private giphyService: GiphyService, private loaderService: LoaderService, private layoutUpdateService: LayoutUpdateService) { }
   
   ngOnInit() {
+    this.layoutUpdateService.getLayoutUpdateTrigger$()
+    .pipe(
+      takeUntil(this.destroy$)
+    )
+    .subscribe(async () => {
+      let tries = 10;
+      for (let index = 0; index < tries; index++) {
+        await new Promise(resolve => setTimeout(resolve, 100)).then(() => this.fixLayout());
+      }
+    });
+
     this.dataservice.getSearchQuery$()
     .pipe(
       filter((searchQuery) => searchQuery !== ""),
@@ -48,6 +60,7 @@ export class SearchResultComponent implements OnInit, OnDestroy {
       
       this.totalCount = reducedSearchResults.pagination.total_count;
       this.dataservice.setSearchResults$(reducedSearchResults);
+      this.layoutUpdateService.setLayoutUpdate$(true);
     });
   }
 
@@ -58,6 +71,7 @@ export class SearchResultComponent implements OnInit, OnDestroy {
 
   setFavorite(reducedGif: ReducedGif): void {
     this.dataservice.addFavoriteGif$(reducedGif);
+    this.layoutUpdateService.setLayoutUpdate$(true);
   }
 
   // ngx-masonry seems to have trouble with undefined heights (overlapping)

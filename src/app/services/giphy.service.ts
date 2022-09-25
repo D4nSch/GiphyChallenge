@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { map, take, tap } from 'rxjs';
+import { BehaviorSubject, map, take, tap } from 'rxjs';
 import { GiphyResponse, ReducedGif } from '../models/giphyresponse';
 import { DataService } from './data.service';
 import { LoaderService } from './loader.service';
+import { LayoutUpdateService } from './layout-update.service';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +21,7 @@ export class GiphyService {
   totalCount = 0;
   showLoaderTime = 750;
 
-  constructor(private http: HttpClient, private dataservice: DataService, private loaderService: LoaderService) { }
+  constructor(private http: HttpClient, private dataservice: DataService, private loaderService: LoaderService, private layoutUpdateService: LayoutUpdateService) { }
   
   getSearchGifs(searchQuery: string) {
     const params = new HttpParams()
@@ -55,7 +56,30 @@ export class GiphyService {
     return this.http.get<GiphyResponse>(environment.gTrendingGifsUrl, {params})
     .pipe(
       tap((giphyResponse) => {
-        console.group("%c GifIt: Trending | giphyResponse "+"", "color: #43F2A7");
+        console.group("%c GifIt: Trending Gifs | giphyResponse "+"", "color: #43F2A7");
+          console.log(giphyResponse)
+        console.groupEnd();
+      }),
+      map((giphyResponse) => this.reduceGiphyResponse(giphyResponse)),
+      tap((reducedGiphyResponse) => {
+        this.result = [...reducedGiphyResponse.images]
+        this.offset = reducedGiphyResponse.pagination.count+reducedGiphyResponse.pagination.offset;
+        this.totalCount = reducedGiphyResponse.pagination.total_count;
+      })
+    );
+  }
+
+  // TODO: CREATE OWN INTERFACE
+  getTrendingClips() {
+    const params = new HttpParams()
+    .set('api_key', environment.gApiKey)
+    .set('limit', this.limit)
+    .set('offset', this.offset);
+    
+    return this.http.get<GiphyResponse>(environment.gTrendingClipsUrl, {params})
+    .pipe(
+      tap((giphyResponse) => {
+        console.group("%c GifIt: Trending Clips | giphyResponse "+"", "color: #43F2A7");
           console.log(giphyResponse)
         console.groupEnd();
       }),
@@ -103,9 +127,15 @@ export class GiphyService {
           switch (category) {
             case "search":
               this.dataservice.setSearchResults$(reducedGiphyResponse);
+              this.layoutUpdateService.setLayoutUpdate$(true);
               break;
             case "trending":
               this.dataservice.setTrendingResults$(reducedGiphyResponse);
+              this.layoutUpdateService.setLayoutUpdate$(true);
+              break;
+            case "clips":
+              this.dataservice.setClipsResults$(reducedGiphyResponse);
+              this.layoutUpdateService.setLayoutUpdate$(true);
               break;
             default:
               break;
@@ -126,7 +156,7 @@ export class GiphyService {
         "title": gifItem.title,
         "id": gifItem.id,
         "preview": gifItem.images["preview"],
-        "original": gifItem.images["original"]
+        "original": gifItem.images["original"],
       }
 
       reducedGifContainer.push(reducedGifItem);
