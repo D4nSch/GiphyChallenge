@@ -39,9 +39,11 @@ export class TrendingGifsOverviewComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     )
     .subscribe(async () => {
-      let tries = 10;
+      let tries = this.layoutUpdateService.tries;
+      let pauseTime = this.layoutUpdateService.pauseTime;
+
       for (let index = 0; index < tries; index++) {
-        await new Promise(resolve => setTimeout(resolve, 100)).then(() => this.fixLayout());
+        await new Promise(resolve => setTimeout(resolve, pauseTime)).then(() => this.fixLayout());
       }
     });
 

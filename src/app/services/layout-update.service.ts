@@ -6,6 +6,8 @@ import { BehaviorSubject, Observable, Subject } from 'rxjs';
 })
 export class LayoutUpdateService {
 
+  tries = 5;
+  pauseTime = 200;
   private layoutUpdateTrigger$: Subject<boolean> = new Subject;
 
   constructor() { }
