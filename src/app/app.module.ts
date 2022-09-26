@@ -14,6 +14,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgxMasonryModule } from 'ngx-masonry';
 import { LoaderComponent } from './loader/loader.component';
+import { IvyCarouselModule } from 'angular-responsive-carousel2';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import { LoaderComponent } from './loader/loader.component';
     ReactiveFormsModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    NgxMasonryModule
+    NgxMasonryModule,
+    IvyCarouselModule
   ],
   providers: [],
   bootstrap: [AppComponent]

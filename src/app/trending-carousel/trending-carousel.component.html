@@ -1,4 +1,11 @@
 <div style="background-color: lightgoldenrodyellow">
     <p>trending-carousel works!</p>
-    <p>XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</p>
+    <carousel [cellWidth]=240 [height]=240>
+        <div class="carousel-cell" *ngFor="let trendingResult of (trendingResults$ | async)?.images">
+            <video class="w-60" loop autoplay drag-scroll-item>
+                <source [src]="trendingResult.preview">
+            </video>
+            <img class="w-12 !absolute" (click)="setFavorite(trendingResult)" src="../../assets/heart.svg" alt="heart">
+        </div>
+    </carousel>
 </div>
