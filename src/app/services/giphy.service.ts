@@ -109,7 +109,7 @@ export class GiphyService {
           console.groupEnd();
         }),
         map((giphyResponse) => {
-          if(category === "gif" || category === "trending") {
+          if(category === "search" || category === "trending") {
             return this.reduceGiphyResponseGifs(giphyResponse as GiphyResponseGifs);
           } else {
             return this.reduceGiphyResponseClips(giphyResponse as GiphyResponseClips);
