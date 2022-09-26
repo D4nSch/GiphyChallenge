@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { ReducedGif, ReducedGiphyResponse } from '../models/giphyresponse';
+import { ReducedData, ReducedGiphyResponse } from '../models/giphyresponse';
 
 @Injectable({
   providedIn: 'root'
@@ -16,31 +16,31 @@ export class DataService {
   private trendingResults$: Subject<ReducedGiphyResponse> = new Subject<ReducedGiphyResponse>;
   private clipsResults$: Subject<ReducedGiphyResponse> = new Subject<ReducedGiphyResponse>;
 
-  private favoriteGifs$: BehaviorSubject<ReducedGif[]> = new BehaviorSubject<ReducedGif[]>(JSON.parse(localStorage.getItem("favoriteGifsList")?.length ? localStorage.getItem("favoriteGifsList")! : "[]"));
+  private favoriteItems$: BehaviorSubject<ReducedData[]> = new BehaviorSubject<ReducedData[]>(JSON.parse(localStorage.getItem("favoriteItemsList")?.length ? localStorage.getItem("favoriteItemsList")! : "[]"));
 
-  getFavoriteGifs$(): Observable<ReducedGif[]> {
-    return this.favoriteGifs$.asObservable();
+  getFavoriteItems$(): Observable<ReducedData[]> {
+    return this.favoriteItems$.asObservable();
   }
 
-  addFavoriteGif$(favoriteGif: ReducedGif) {
-    let duplicateGifsList = this.favoriteGifs$.getValue().filter(gifEntry => gifEntry.id === favoriteGif.id);
+  addFavoriteItem$(favoriteItem: ReducedData) {
+    let duplicateItemsList = this.favoriteItems$.getValue().filter(item => item.id === favoriteItem.id);
 
-    if(duplicateGifsList.length === 0) {
-      let newFavoriteGifsList = this.favoriteGifs$.getValue().concat(favoriteGif);
+    if(duplicateItemsList.length === 0) {
+      let newFavoriteItemsList = this.favoriteItems$.getValue().concat(favoriteItem);
       
-      localStorage.setItem("favoriteGifsList", JSON.stringify(newFavoriteGifsList));
-      this.favoriteGifs$.next(newFavoriteGifsList);
+      localStorage.setItem("favoriteItemsList", JSON.stringify(newFavoriteItemsList));
+      this.favoriteItems$.next(newFavoriteItemsList);
     } else {
       //TODO: add notification
       console.log("GIF already in favorites!");
     }
   }
 
-  removeFavoriteGif$(favoriteGif: ReducedGif) {
-    let newFavoriteGifsList = this.favoriteGifs$.getValue().filter(gifEntry => gifEntry.id !== favoriteGif.id);
+  removeFavoriteItem$(favoriteItem: ReducedData) {
+    let newFavoriteItemsList = this.favoriteItems$.getValue().filter(item => item.id !== favoriteItem.id);
 
-    localStorage.setItem("favoriteGifsList", JSON.stringify(newFavoriteGifsList));
-    this.favoriteGifs$.next(newFavoriteGifsList);
+    localStorage.setItem("favoriteItemsList", JSON.stringify(newFavoriteItemsList));
+    this.favoriteItems$.next(newFavoriteItemsList);
 
     //TODO: add notification
     console.log("GIF removed from favorites!");
