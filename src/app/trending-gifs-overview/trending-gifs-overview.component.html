@@ -1,4 +1,4 @@
-<div style="background-color: lightpink">
+<div infiniteScroll [infiniteScrollDistance]="1" [infiniteScrollThrottle]="500" (scrolled)="loadNextBatch()">
     <p>trending-gifs-overview works!</p>
     <!-- <ngx-masonry (layoutComplete)="fixLayout()" [options]="{ gutter: 10 }" #trending> -->
     <ngx-masonry [options]="{ gutter: 10 }" #trending>

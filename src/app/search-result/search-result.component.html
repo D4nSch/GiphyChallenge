@@ -1,4 +1,4 @@
-<div style="background-color: lightcyan">
+<div infiniteScroll [infiniteScrollDistance]="1" [infiniteScrollThrottle]="500" (scrolled)="loadNextBatch()">
     <p>search-result works!</p>
     <p>{{ searchQuery$ | async }}</p>
     <p>{{ totalCount }}</p>

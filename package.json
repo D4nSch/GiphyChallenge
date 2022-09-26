@@ -21,6 +21,7 @@
     "angular-responsive-carousel2": "^0.0.6",
     "daisyui": "^2.30.0",
     "masonry-layout": "^4.2.2",
+    "ngx-infinite-scroll": "^14.0.0",
     "ngx-masonry": "^13.0.0",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
