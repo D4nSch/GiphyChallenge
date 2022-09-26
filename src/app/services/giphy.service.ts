@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { BehaviorSubject, map, take, tap } from 'rxjs';
+import { BehaviorSubject, delay, map, take, tap } from 'rxjs';
 import { GiphyResponseGifs, GiphyResponseClips, ReducedData, Clip } from '../models/giphyresponse';
 import { DataService } from './data.service';
 import { LoaderService } from './loader.service';
@@ -19,7 +19,7 @@ export class GiphyService {
   limit = 25;
   offset = 0;
   totalCount = 0;
-  showLoaderTime = 750;
+  showLoaderTime = 1000;
 
   constructor(private http: HttpClient, private dataservice: DataService, private loaderService: LoaderService, private layoutUpdateService: LayoutUpdateService) { }
   
@@ -122,30 +122,29 @@ export class GiphyService {
           this.offset = this.offset+reducedGiphyResponse.images.length;
           this.loaderService.show();
         }),
+        delay(this.showLoaderTime),
         take(1)
       )
       .subscribe(async (reducedGiphyResponse) => {
         reducedGiphyResponse.images = this.result;
 
-        await new Promise(resolve => setTimeout(resolve, this.showLoaderTime)).then(() => {
-          this.loaderService.hide();
-          switch (category) {
-            case "search":
-              this.dataservice.setSearchResults$(reducedGiphyResponse);
-              this.layoutUpdateService.setLayoutUpdate$(true);
-              break;
-            case "trending":
-              this.dataservice.setTrendingResults$(reducedGiphyResponse);
-              this.layoutUpdateService.setLayoutUpdate$(true);
-              break;
-            case "clips":
-              this.dataservice.setClipsResults$(reducedGiphyResponse);
-              this.layoutUpdateService.setLayoutUpdate$(true);
-              break;
-            default:
-              break;
-          }
-        });
+        this.loaderService.hide();
+        switch (category) {
+          case "search":
+            this.dataservice.setSearchResults$(reducedGiphyResponse);
+            this.layoutUpdateService.setLayoutUpdate$(true);
+            break;
+          case "trending":
+            this.dataservice.setTrendingResults$(reducedGiphyResponse);
+            this.layoutUpdateService.setLayoutUpdate$(true);
+            break;
+          case "clips":
+            this.dataservice.setClipsResults$(reducedGiphyResponse);
+            this.layoutUpdateService.setLayoutUpdate$(true);
+            break;
+          default:
+            break;
+        }
       });
     } else {
       console.log("No more gifs with this search query available!");
