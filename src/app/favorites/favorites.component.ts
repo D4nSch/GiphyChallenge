@@ -1,7 +1,7 @@
-import { Component, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnChanges, OnInit, QueryList, SimpleChanges, ViewChild, ViewChildren } from '@angular/core';
 import { NgxMasonryComponent } from 'ngx-masonry';
 import { Subject, takeUntil } from 'rxjs';
-import { ReducedGif } from '../models/giphyresponse';
+import { ReducedData } from '../models/giphyresponse';
 import { DataService } from '../services/data.service';
 import { LayoutUpdateService } from '../services/layout-update.service';
 import { LoaderService } from '../services/loader.service';
@@ -13,8 +13,9 @@ import { LoaderService } from '../services/loader.service';
 })
 export class FavoritesComponent implements OnInit {
   @ViewChild('favorites') masonry?: NgxMasonryComponent;
+  @ViewChildren('favoritesListItems') favoritesListItems?: QueryList<ElementRef>;
   
-  favoriteGifs$ = this.dataservice.getFavoriteGifs$();
+  favoriteItems$ = this.dataservice.getFavoriteItems$();
 
   private readonly destroy$ = new Subject<void>();
 
@@ -40,9 +41,27 @@ export class FavoritesComponent implements OnInit {
     this.destroy$.complete();
   }
 
-  removeFavorite(reducedGif: ReducedGif): void {
-    this.dataservice.removeFavoriteGif$(reducedGif);
+  removeFavorite(item: ReducedData): void {
+    this.dataservice.removeFavoriteItem$(item);
     this.layoutUpdateService.setLayoutUpdate$(true);
+  }
+
+  playVideo(index: number): void {
+    if(this.favoritesListItems !== undefined) {
+      let hoveredItem = this.favoritesListItems.toArray()[index];
+
+      hoveredItem.nativeElement.muted = false;
+      hoveredItem.nativeElement.play();
+    }
+  }
+  
+  stopVideo(index: number): void {
+    if(this.favoritesListItems !== undefined) {
+      let hoveredItem = this.favoritesListItems.toArray()[index];
+      
+      hoveredItem.nativeElement.muted = true;
+      hoveredItem.nativeElement.pause();
+    }
   }
 
   // ngx-masonry seems to have trouble with undefined heights (overlapping)
