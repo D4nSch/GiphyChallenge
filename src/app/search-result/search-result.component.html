@@ -6,7 +6,7 @@
     <ngx-masonry [options]="{ gutter: 10 }" #searchresult>
         <div ngxMasonryItem class="bg-yellow-300 min-h-fit mb-2.5" *ngFor="let searchResult of (searchResults$ | async)?.images">
             <img class="w-12 absolute bottom-0" (click)="setFavorite(searchResult)" src="../../assets/heart.svg" alt="heart">
-            <video autoplay loop class="w-60 min-h-fit pointer-events-none" [src]="searchResult.preview.mp4"></video>
+            <video autoplay loop class="w-60 min-h-fit pointer-events-none" [src]="searchResult.preview"></video>
         </div>
     </ngx-masonry>
     <app-loader></app-loader>

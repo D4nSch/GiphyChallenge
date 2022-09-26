@@ -4,7 +4,7 @@ import { DataService } from '../services/data.service';
 import { GiphyService } from '../services/giphy.service';
 import { LoaderService } from '../services/loader.service';
 import { NgxMasonryComponent } from 'ngx-masonry';
-import { ReducedGif } from '../models/giphyresponse';
+import { ReducedData } from '../models/giphyresponse';
 import { environment } from '../../environments/environment';
 import { LayoutUpdateService } from '../services/layout-update.service';
 
@@ -22,7 +22,7 @@ export class SearchResultComponent implements OnInit, OnDestroy {
     if ((window.innerHeight + window.scrollY) >= document.body.scrollHeight) {
       // Prevent multiple loads
       if(this.loaderService.isLoading.getValue() === false) {
-        this.giphyService.getNextGifs("search", environment.gSearchGifsUrl);
+        this.giphyService.getNextItems("search", environment.gSearchGifsUrl);
       }
     }
   }
@@ -71,8 +71,8 @@ export class SearchResultComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  setFavorite(reducedGif: ReducedGif): void {
-    this.dataservice.addFavoriteGif$(reducedGif);
+  setFavorite(item: ReducedData): void {
+    this.dataservice.addFavoriteItem$(item);
     this.layoutUpdateService.setLayoutUpdate$(true);
   }
 

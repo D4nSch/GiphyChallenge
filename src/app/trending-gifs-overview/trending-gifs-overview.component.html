@@ -5,7 +5,7 @@
         <div ngxMasonryItem class="bg-yellow-300 min-h-fit mb-2.5" *ngFor="let trendingResult of (trendingResults$ | async)?.images">
             <!-- <pre>{{ searchResult | json }}</pre> -->
             <img class="w-12 absolute bottom-0" (click)="setFavorite(trendingResult)" src="../../assets/heart.svg" alt="heart">
-            <video autoplay loop class="w-60 min-h-fit pointer-events-none" [src]="trendingResult.preview.mp4"></video>
+            <video autoplay loop class="w-60 min-h-fit pointer-events-none" [src]="trendingResult.preview"></video>
         </div>
     </ngx-masonry>
     <app-loader></app-loader>

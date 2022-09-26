@@ -2,7 +2,7 @@ import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/
 import { NgxMasonryComponent } from 'ngx-masonry';
 import { Subject, takeUntil } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { ReducedGif } from '../models/giphyresponse';
+import { ReducedData } from '../models/giphyresponse';
 import { DataService } from '../services/data.service';
 import { GiphyService } from '../services/giphy.service';
 import { LayoutUpdateService } from '../services/layout-update.service';
@@ -22,7 +22,7 @@ export class TrendingGifsOverviewComponent implements OnInit, OnDestroy {
     if ((window.innerHeight + window.scrollY) >= document.body.scrollHeight) {
       // Prevent multiple loads
       if(this.loaderService.isLoading.getValue() === false) {
-        this.giphyService.getNextGifs("trending", environment.gTrendingGifsUrl);
+        this.giphyService.getNextItems("trending", environment.gTrendingGifsUrl);
       }
     }
   }
@@ -62,8 +62,8 @@ export class TrendingGifsOverviewComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  setFavorite(reducedGif: ReducedGif): void {
-    this.dataservice.addFavoriteGif$(reducedGif);
+  setFavorite(item: ReducedData): void {
+    this.dataservice.addFavoriteItem$(item);
     this.layoutUpdateService.setLayoutUpdate$(true);
   }
 
