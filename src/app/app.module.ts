@@ -15,6 +15,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgxMasonryModule } from 'ngx-masonry';
 import { LoaderComponent } from './loader/loader.component';
 import { IvyCarouselModule } from 'angular-responsive-carousel2';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 
 @NgModule({
   declarations: [
@@ -35,6 +36,7 @@ import { IvyCarouselModule } from 'angular-responsive-carousel2';
     HttpClientModule,
     BrowserAnimationsModule,
     NgxMasonryModule,
+    InfiniteScrollModule,
     IvyCarouselModule
   ],
   providers: [],
