@@ -16,3 +16,7 @@
 body {
     background-color: theme('colors.gBackgroundDark');
 }
+
+.carousel-arrow {
+    background-color: theme('colors.gAccent') !important;
+}
