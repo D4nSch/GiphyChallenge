@@ -60,7 +60,7 @@ export class ClipsComponent implements OnInit {
 
   loadNextBatch() {
     if(this.loaderService.isLoading.getValue() === false) {
-      this.giphyService.getNextItems("search", environment.gSearchGifsUrl);
+      this.giphyService.getNextItems("clips", environment.gTrendingClipsUrl);
     }
   }
 

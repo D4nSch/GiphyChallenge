@@ -69,7 +69,7 @@ export class TrendingGifsOverviewComponent implements OnInit, OnDestroy {
 
   loadNextBatch() {
     if(this.loaderService.isLoading.getValue() === false) {
-      this.giphyService.getNextItems("search", environment.gSearchGifsUrl);
+      this.giphyService.getNextItems("trending", environment.gTrendingGifsUrl);
     }
   }
 
