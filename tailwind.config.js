@@ -4,6 +4,7 @@ module.exports = {
   theme: {
     // default breakpoints but with 40px removed
     screens: {
+      xs: '360px',
       sm: '550px',
       md: '700px',
       lg: '900px',

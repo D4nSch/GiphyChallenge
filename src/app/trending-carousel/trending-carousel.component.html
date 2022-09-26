@@ -1,7 +1,10 @@
-<div style="background-color: lightgoldenrodyellow">
-    <p>trending-carousel works!</p>
+<div>
+    <div class="flex flex-row justify-between text-xl text-gLight">
+        <h2>Trending</h2>
+        <h2>More Trending Gifs ></h2>
+    </div>
     <carousel [cellWidth]=240 [height]=240>
-        <div class="carousel-cell" *ngFor="let trendingResult of (trendingResults$ | async)?.images">
+        <div class="carousel-cell bg-gBackgroundLight border-2 border-gDark" *ngFor="let trendingResult of (trendingResults$ | async)?.images">
             <video class="w-60" loop autoplay drag-scroll-item>
                 <source [src]="trendingResult.preview">
             </video>
