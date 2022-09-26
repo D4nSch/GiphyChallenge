@@ -1,4 +1,12 @@
 <div style="background-color:lightgray;">
     <p>clips works!</p>
-    <p>RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR</p>
+    <ngx-masonry [options]="{ gutter: 10 }" #clips>
+        <div ngxMasonryItem class="bg-yellow-300 min-h-fit mb-2.5" *ngFor="let trendingResult of (trendingResults$ | async)?.images; index as i">
+            <video loop [autoplay]="false" [muted]="true" (mouseover)="playVideo(i)" (mouseout)="stopVideo(i)" class="w-60 min-h-fit" #clipsListItems>
+                <source [src]="trendingResult.preview">
+            </video>
+            <img class="w-12 absolute bottom-0" (click)="setFavorite(trendingResult)" src="../../assets/heart.svg" alt="heart">
+        </div>
+    </ngx-masonry>
+    <app-loader></app-loader>
 </div>
