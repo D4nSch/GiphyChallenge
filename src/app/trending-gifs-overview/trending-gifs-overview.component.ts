@@ -27,11 +27,11 @@ export class TrendingGifsOverviewComponent implements OnInit, OnDestroy {
     }
   }
 
-  trendingResults$ = this.dataservice.getTrendingResults$();
+  trendingResults$ = this.dataService.getTrendingResults$();
   
   private readonly destroy$ = new Subject<void>();
 
-  constructor(private giphyService: GiphyService, private dataservice: DataService, private loaderService: LoaderService, private layoutUpdateService: LayoutUpdateService) { }
+  constructor(private giphyService: GiphyService, private dataService: DataService, private loaderService: LoaderService, private layoutUpdateService: LayoutUpdateService) { }
 
   ngOnInit(): void {
     this.layoutUpdateService.getLayoutUpdateTrigger$()
@@ -52,7 +52,7 @@ export class TrendingGifsOverviewComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     )
     .subscribe((reducedTrendingResults) => {
-      this.dataservice.setTrendingResults$(reducedTrendingResults);
+      this.dataService.setTrendingResults$(reducedTrendingResults);
       this.layoutUpdateService.setLayoutUpdate$(true);
     })
   }
@@ -63,7 +63,7 @@ export class TrendingGifsOverviewComponent implements OnInit, OnDestroy {
   }
 
   setFavorite(item: ReducedData): void {
-    this.dataservice.addFavoriteItem$(item);
+    this.dataService.addFavoriteItem$(item);
     this.layoutUpdateService.setLayoutUpdate$(true);
   }
 
