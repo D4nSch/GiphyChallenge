@@ -10,11 +10,40 @@ type Images = {
     url: string
     width: string
     height: string
-    size?: string
-    mp4?: string
-    mp4_size?: string
-    webp?: string
-    webp_size?: string
+    size: string
+    mp4: string
+    mp4_size: string
+    webp: string
+    webp_size: string
+}
+
+type Video = {
+    height: string,
+    url: string,
+    width: string
+}
+
+interface Clip {
+    type: string,
+    id: string,
+    url: string,
+    embed_url: string,
+    duration: string,
+    username: string,
+    source: string,
+    title: string,
+    rating: string,
+    cta?: any,
+    images: {
+        [key: string]: Images
+    },
+    user: User,
+    video: {
+        assets: {
+            [key: string]: Video
+        },
+        duration: number
+    }
 }
 
 interface Gif {
@@ -41,11 +70,12 @@ interface Gif {
     title: string
 }
 
-interface ReducedGif {
+interface ReducedData {
     title: string,
     id: string,
-    preview: Images,
-    original: Images
+    preview: string,
+    original: string
+    type: string
 }
 
 interface Pagination {
@@ -60,23 +90,31 @@ interface Meta {
     response_id: string
 }
 
-interface GiphyResponse {
+interface GiphyResponseGifs {
     data: Gif[],
     meta: Meta
     pagination: Pagination,
 }
 
+interface GiphyResponseClips {
+    data: Clip[],
+    meta: Meta,
+    pagination: Pagination
+}
+
 interface ReducedGiphyResponse {
-    images: ReducedGif[],
+    images: ReducedData[],
     meta: Meta
     pagination: Pagination,
 }
 
 export {
     Gif,
-    ReducedGif,
+    Clip,
+    ReducedData,
     Pagination,
     Meta,
-    GiphyResponse,
+    GiphyResponseGifs,
+    GiphyResponseClips,
     ReducedGiphyResponse
 }
