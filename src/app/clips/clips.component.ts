@@ -18,16 +18,6 @@ export class ClipsComponent implements OnInit {
   @ViewChild('clips') masonry?: NgxMasonryComponent;
   @ViewChildren('clipsListItems') clipsListItems?: QueryList<ElementRef>;
 
-  @HostListener('window:scroll')
-  onScroll() {
-    if ((window.innerHeight + window.scrollY) >= document.body.scrollHeight) {
-      // Prevent multiple loads
-      if(this.loaderService.isLoading.getValue() === false) {
-        this.giphyService.getNextItems("clips", environment.gTrendingClipsUrl);
-      }
-    }
-  }
-
   trendingResults$ = this.dataservice.getClipsResults$();
   
   private readonly destroy$ = new Subject<void>();
@@ -66,6 +56,12 @@ export class ClipsComponent implements OnInit {
   setFavorite(reducedData: ReducedData): void {
     this.dataservice.addFavoriteItem$(reducedData);
     this.layoutUpdateService.setLayoutUpdate$(true);
+  }
+
+  loadNextBatch() {
+    if(this.loaderService.isLoading.getValue() === false) {
+      this.giphyService.getNextItems("search", environment.gSearchGifsUrl);
+    }
   }
 
   playVideo(index: number): void {

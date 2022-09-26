@@ -67,6 +67,12 @@ export class TrendingGifsOverviewComponent implements OnInit, OnDestroy {
     this.layoutUpdateService.setLayoutUpdate$(true);
   }
 
+  loadNextBatch() {
+    if(this.loaderService.isLoading.getValue() === false) {
+      this.giphyService.getNextItems("search", environment.gSearchGifsUrl);
+    }
+  }
+
   // ngx-masonry seems to have trouble with undefined heights (overlapping)
   fixLayout() {
     if (this.masonry !== undefined) {

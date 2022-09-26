@@ -16,16 +16,6 @@ import { LayoutUpdateService } from '../services/layout-update.service';
 })
 export class SearchResultComponent implements OnInit, OnDestroy {
   @ViewChild('searchresult') masonry?: NgxMasonryComponent;
-  
-  @HostListener('window:scroll')
-  onScroll() {
-    if ((window.innerHeight + window.scrollY) >= document.body.scrollHeight) {
-      // Prevent multiple loads
-      if(this.loaderService.isLoading.getValue() === false) {
-        this.giphyService.getNextItems("search", environment.gSearchGifsUrl);
-      }
-    }
-  }
 
   searchResults$ = this.dataservice.getSearchResults$();
   searchQuery$ = this.dataservice.getSearchQuery$();
@@ -74,6 +64,12 @@ export class SearchResultComponent implements OnInit, OnDestroy {
   setFavorite(item: ReducedData): void {
     this.dataservice.addFavoriteItem$(item);
     this.layoutUpdateService.setLayoutUpdate$(true);
+  }
+
+  loadNextBatch() {
+    if(this.loaderService.isLoading.getValue() === false) {
+      this.giphyService.getNextItems("search", environment.gSearchGifsUrl);
+    }
   }
 
   // ngx-masonry seems to have trouble with undefined heights (overlapping)
