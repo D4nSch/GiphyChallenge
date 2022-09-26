@@ -10,11 +10,15 @@ module.exports = {
       xl: '1100px',
       '2xl': '1300px',
     },
-    colors: {
-      primary: '#5c6ac4',
-      secondary: '#ecc94b'
-    },
-    extend: {},
+    extend: {
+      colors: {
+        'gBackgroundDark': '#182921',
+        'gBackgroundLight': '#1D3F2F',
+        'gAccent': '#43F2A7',
+        'gDark': '#1C1C1C',
+        'gLight': '#E8E8E8'
+      }
+    }
   },
   plugins: [require("daisyui")],
   daisyui: {
