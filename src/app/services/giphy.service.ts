@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { BehaviorSubject, map, take, tap } from 'rxjs';
-import { GiphyResponse, ReducedGif } from '../models/giphyresponse';
+import { GiphyResponseGifs, GiphyResponseClips, ReducedData, Clip } from '../models/giphyresponse';
 import { DataService } from './data.service';
 import { LoaderService } from './loader.service';
 import { LayoutUpdateService } from './layout-update.service';
@@ -14,7 +14,7 @@ export class GiphyService {
   router: any;
 
   searchQuery = "";
-  result: ReducedGif[] = [];
+  result: ReducedData[] = [];
   // GIFs per search/scroll
   limit = 25;
   offset = 0;
@@ -30,14 +30,14 @@ export class GiphyService {
     .set('limit', this.limit)
     .set('offset', 0);
     
-    return this.http.get<GiphyResponse>(environment.gSearchGifsUrl, {params})
+    return this.http.get<GiphyResponseGifs>(environment.gSearchGifsUrl, {params})
     .pipe(
       tap((giphyResponse) => {
         console.group("%c GifIt: Search | giphyResponse "+"", "color: #43F2A7");
           console.log(giphyResponse)
         console.groupEnd();
       }),
-      map((giphyResponse) => this.reduceGiphyResponse(giphyResponse)),
+      map((giphyResponse) => this.reduceGiphyResponseGifs(giphyResponse)),
       tap((reducedGiphyResponse) => {
         this.searchQuery = searchQuery;
         this.result = [...reducedGiphyResponse.images]
@@ -53,14 +53,14 @@ export class GiphyService {
     .set('limit', this.limit)
     .set('offset', this.offset);
     
-    return this.http.get<GiphyResponse>(environment.gTrendingGifsUrl, {params})
+    return this.http.get<GiphyResponseGifs>(environment.gTrendingGifsUrl, {params})
     .pipe(
       tap((giphyResponse) => {
         console.group("%c GifIt: Trending Gifs | giphyResponse "+"", "color: #43F2A7");
           console.log(giphyResponse)
         console.groupEnd();
       }),
-      map((giphyResponse) => this.reduceGiphyResponse(giphyResponse)),
+      map((giphyResponse) => this.reduceGiphyResponseGifs(giphyResponse)),
       tap((reducedGiphyResponse) => {
         this.result = [...reducedGiphyResponse.images]
         this.offset = reducedGiphyResponse.pagination.count+reducedGiphyResponse.pagination.offset;
@@ -69,21 +69,20 @@ export class GiphyService {
     );
   }
 
-  // TODO: CREATE OWN INTERFACE
   getTrendingClips() {
     const params = new HttpParams()
     .set('api_key', environment.gApiKey)
     .set('limit', this.limit)
     .set('offset', this.offset);
     
-    return this.http.get<GiphyResponse>(environment.gTrendingClipsUrl, {params})
+    return this.http.get<GiphyResponseClips>(environment.gTrendingClipsUrl, {params})
     .pipe(
       tap((giphyResponse) => {
         console.group("%c GifIt: Trending Clips | giphyResponse "+"", "color: #43F2A7");
           console.log(giphyResponse)
         console.groupEnd();
       }),
-      map((giphyResponse) => this.reduceGiphyResponse(giphyResponse)),
+      map((giphyResponse) => this.reduceGiphyResponseClips(giphyResponse)),
       tap((reducedGiphyResponse) => {
         this.result = [...reducedGiphyResponse.images]
         this.offset = reducedGiphyResponse.pagination.count+reducedGiphyResponse.pagination.offset;
@@ -92,7 +91,7 @@ export class GiphyService {
     );
   }
     
-  getNextGifs(category: string, url: string) {
+  getNextItems(category: string, url: string) {
     let params = new HttpParams()
     .set('api_key', environment.gApiKey)
     .set('limit', this.limit)
@@ -103,13 +102,19 @@ export class GiphyService {
     } 
     
     if(this.totalCount !== this.offset) {
-      this.http.get<GiphyResponse>(url, {params}).pipe(
+      this.http.get<GiphyResponseGifs | GiphyResponseClips>(url, {params}).pipe(
         tap((giphyResponse) => {
           console.group("%c GifIt: Scroll | giphyResponse "+"", "color: #43F2A7");
             console.log(giphyResponse);
           console.groupEnd();
         }),
-        map((giphyResponse) => this.reduceGiphyResponse(giphyResponse)),
+        map((giphyResponse) => {
+          if(category === "gif" || category === "trending") {
+            return this.reduceGiphyResponseGifs(giphyResponse as GiphyResponseGifs);
+          } else {
+            return this.reduceGiphyResponseClips(giphyResponse as GiphyResponseClips);
+          }
+        }),
         tap((reducedGiphyResponse) => {
           // Concat should be faster, because it's both an array
           this.result = this.result.concat(reducedGiphyResponse.images);
@@ -148,22 +153,45 @@ export class GiphyService {
   }
 
   // stripping the GiphyResponse of unnecessary stuff
-  reduceGiphyResponse(giphyResponse: GiphyResponse) {
-    let reducedGifContainer: ReducedGif[] = [];
+  reduceGiphyResponseGifs(giphyResponse: GiphyResponseGifs) {
+    let reducedDataContainer: ReducedData[] = [];
 
-    giphyResponse.data.forEach(gifItem => {
-      let reducedGifItem = {
-        "title": gifItem.title,
-        "id": gifItem.id,
-        "preview": gifItem.images["preview"],
-        "original": gifItem.images["original"],
+    giphyResponse.data.forEach(item => {
+      let reducedItem = {
+        "title": item.title,
+        "id": item.id,
+        "preview": item.images["preview"].mp4,
+        "original": item.images["original"].mp4,
+        "type": item.type
       }
 
-      reducedGifContainer.push(reducedGifItem);
+      reducedDataContainer.push(reducedItem);
     });
 
     return {
-      images: reducedGifContainer,
+      images: reducedDataContainer,
+      pagination: giphyResponse.pagination,
+      meta: giphyResponse.meta
+    }
+  }
+
+  reduceGiphyResponseClips(giphyResponse: GiphyResponseClips) {
+    let reducedDataContainer: ReducedData[] = [];
+
+    giphyResponse.data.forEach(item => {
+      let reducedItem = {
+        "title": item.title,
+        "id": item.id,
+        "preview": item.video.assets["360p"].url,
+        "original": item.video.assets["360p"].url,
+        "type": item.type
+      }
+
+      reducedDataContainer.push(reducedItem);
+    });
+
+    return {
+      images: reducedDataContainer,
       pagination: giphyResponse.pagination,
       meta: giphyResponse.meta
     }
