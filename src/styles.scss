@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+    font-family: koulen;
+    src: url(assets/fonts/Koulen-Regular.ttf) format("truetype");
+}
+
+@layer base {
+    html {
+      font-family: koulen, system-ui, sans-serif;
+    }
+}   
+
 body {
     background-color: theme('colors.gBackgroundDark');
 }
