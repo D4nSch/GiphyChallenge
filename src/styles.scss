@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import "node_modules/@costlydeveloper/ngx-awesome-popup/styles/theme";
+
 @font-face {
     font-family: koulen;
     src: url(assets/fonts/Koulen-Regular.ttf) format("truetype");
@@ -19,4 +21,19 @@ body {
 
 .carousel-arrow {
     background-color: theme('colors.gAccent') !important;
+}
+
+.is-active {
+    color: theme('colors.gAccent');
+}
+
+.evolve-toast {
+    background: transparent !important;
+    background-color: theme('colors.gBackgroundDark') !important;
+    border: solid 2px theme('colors.gAccent');
+
+    .text-wrapper {
+        font-weight: bold;
+        color: theme('colors.gLight');;
+    }
 }
