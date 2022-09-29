@@ -6,6 +6,7 @@ import { GiphyResponseGifs, GiphyResponseClips, ReducedData, Clip } from '../mod
 import { DataService } from './data.service';
 import { LoaderService } from './loader.service';
 import { LayoutUpdateService } from './layout-update.service';
+import { NotificationService } from './notification.service';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +22,7 @@ export class GiphyService {
   totalCount = 0;
   showLoaderTime = 1000;
 
-  constructor(private http: HttpClient, private dataservice: DataService, private loaderService: LoaderService, private layoutUpdateService: LayoutUpdateService) { }
+  constructor(private http: HttpClient, private dataservice: DataService, private loaderService: LoaderService, private layoutUpdateService: LayoutUpdateService, private notificationService: NotificationService) { }
   
   getSearchGifs(searchQuery: string) {
     const params = new HttpParams()
@@ -147,7 +148,7 @@ export class GiphyService {
         }
       });
     } else {
-      console.log("No more gifs with this search query available!");
+      this.notificationService.toastNotification("You've reached the end of this search. No more GIFs/Clips available. Try a new query.")
     }
   }
 
