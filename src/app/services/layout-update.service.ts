@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LayoutUpdateService {
 
-  tries = 5;
-  pauseTime = 200;
+  tries = 10;
+  pauseTime = 150;
   private layoutUpdateTrigger$: Subject<boolean> = new Subject;
 
   constructor() { }
