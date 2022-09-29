@@ -1,49 +1,61 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { ReducedData, ReducedGiphyResponse } from '../models/giphyresponse';
+import { NotificationService } from './notification.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
   
-  constructor() { }
+  constructor(private notificationService: NotificationService) { }
 
-  private searchQuery$: BehaviorSubject<string> = new BehaviorSubject("");
+  private searchQuery$ = new BehaviorSubject("");
   // ReplaySubject(1) doesn't have an initial value until it is set with next, but emits last value on subscription
   // private searchResult$: Subject<GiphyResponse> = new ReplaySubject<GiphyResponse>(1);
-  private searchResults$: Subject<ReducedGiphyResponse> = new Subject<ReducedGiphyResponse>;
-  private trendingResults$: Subject<ReducedGiphyResponse> = new Subject<ReducedGiphyResponse>;
-  private clipsResults$: Subject<ReducedGiphyResponse> = new Subject<ReducedGiphyResponse>;
+  private searchResults$ = new Subject<ReducedGiphyResponse>;
+  private trendingResults$ = new Subject<ReducedGiphyResponse>;
+  private clipsResults$ = new Subject<ReducedGiphyResponse>;
 
-  private favoriteItems$: BehaviorSubject<ReducedData[]> = new BehaviorSubject<ReducedData[]>(JSON.parse(localStorage.getItem("favoriteItemsList")?.length ? localStorage.getItem("favoriteItemsList")! : "[]"));
+  private favoriteItems$ = new BehaviorSubject<ReducedData[]>(JSON.parse(localStorage.getItem("favoriteItemsList")?.length ? localStorage.getItem("favoriteItemsList")! : "[]"));
 
   getFavoriteItems$(): Observable<ReducedData[]> {
     return this.favoriteItems$.asObservable();
   }
 
+  clearFavoriteItems$(): void {
+    if(this.favoriteItems$.getValue().length !== 0) {
+      localStorage.setItem("favoriteItemsList", JSON.stringify([]));
+      this.favoriteItems$.next([]);
+
+      this.notificationService.toastNotification("All favorite GIFs/Clips cleared!");
+    } else {
+      this.notificationService.toastNotification("No favorite GIFs/Clips to clear!");
+    }
+  }
+  
   addFavoriteItem$(favoriteItem: ReducedData) {
     let duplicateItemsList = this.favoriteItems$.getValue().filter(item => item.id === favoriteItem.id);
-
+    
     if(duplicateItemsList.length === 0) {
       let newFavoriteItemsList = this.favoriteItems$.getValue().concat(favoriteItem);
       
       localStorage.setItem("favoriteItemsList", JSON.stringify(newFavoriteItemsList));
       this.favoriteItems$.next(newFavoriteItemsList);
+
+      this.notificationService.toastNotification("GIF/Clip added to favorites!");
     } else {
-      //TODO: add notification
-      console.log("GIF already in favorites!");
+      this.notificationService.toastNotification("GIF/Clip is already a favorite!");
     }
   }
-
+  
   removeFavoriteItem$(favoriteItem: ReducedData) {
     let newFavoriteItemsList = this.favoriteItems$.getValue().filter(item => item.id !== favoriteItem.id);
-
+    
     localStorage.setItem("favoriteItemsList", JSON.stringify(newFavoriteItemsList));
     this.favoriteItems$.next(newFavoriteItemsList);
-
-    //TODO: add notification
-    console.log("GIF removed from favorites!");
+    
+    this.notificationService.toastNotification("GIF/Clip removed from favorites!");
   }
 
   getClipsResults$(): Observable<ReducedGiphyResponse> {
