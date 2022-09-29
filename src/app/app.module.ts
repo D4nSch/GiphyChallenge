@@ -16,6 +16,7 @@ import { NgxMasonryModule } from 'ngx-masonry';
 import { LoaderComponent } from './loader/loader.component';
 import { IvyCarouselModule } from 'angular-responsive-carousel2';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { ConfirmBoxConfigModule, DialogConfigModule, NgxAwesomePopupModule, ToastNotificationConfigModule } from '@costlydeveloper/ngx-awesome-popup';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,15 @@ import { InfiniteScrollModule } from 'ngx-infinite-scroll';
     BrowserAnimationsModule,
     NgxMasonryModule,
     InfiniteScrollModule,
-    IvyCarouselModule
+    IvyCarouselModule,
+    NgxAwesomePopupModule.forRoot(),
+    ToastNotificationConfigModule.forRoot({
+      globalSettings: {
+        allowedNotificationsAtOnce: 5
+    }}),
+    DialogConfigModule.forRoot(), // Needed for instantiating dynamic components.
+    ConfirmBoxConfigModule.forRoot(), // Needed for instantiating confirm boxes.
+    ToastNotificationConfigModule.forRoot() // Needed for instantiating toast notifications.
   ],
   providers: [],
   bootstrap: [AppComponent]
