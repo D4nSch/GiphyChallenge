@@ -17,17 +17,8 @@ import { LoaderService } from '../services/loader.service';
 export class TrendingGifsOverviewComponent implements OnInit, OnDestroy {
   @ViewChild('trending') masonry?: NgxMasonryComponent;
 
-  @HostListener('window:scroll')
-  onScroll() {
-    if ((window.innerHeight + window.scrollY) >= document.body.scrollHeight) {
-      // Prevent multiple loads
-      if(this.loaderService.isLoading.getValue() === false) {
-        this.giphyService.getNextItems("trending", environment.gTrendingGifsUrl);
-      }
-    }
-  }
-
   trendingResults$ = this.dataService.getTrendingResults$();
+  totalCount = 0;
   
   private readonly destroy$ = new Subject<void>();
 
@@ -52,6 +43,7 @@ export class TrendingGifsOverviewComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     )
     .subscribe((reducedTrendingResults) => {
+      this.totalCount = reducedTrendingResults.pagination.total_count;
       this.dataService.setTrendingResults$(reducedTrendingResults);
       this.layoutUpdateService.setLayoutUpdate$(true);
     })

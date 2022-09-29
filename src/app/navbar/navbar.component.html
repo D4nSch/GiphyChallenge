@@ -1,8 +1,12 @@
-<div class="navbar p-0 bg-transparent">
-    <a routerLink="" class="btn btn-link p-0 h-fit">
-        <img class="w-36" src="../../assets/gifit_logo.png" alt="gifit_logo">
-    </a>
-    <a routerLink="trending-gifs">Trending</a>
-    <a routerLink="clips">Clips</a>
+ <div class="sticky top-0 bg-gBackgroundDark z-[10001] pt-4 mb-4"> <!-- default z-index of the carousel is 10000, to top it add +1 -->
+    <div class="navbar p-0 flex flex-row items-end gap-4 pb-4">
+        <a routerLink="" class="btn btn-link p-0 h-fit">
+            <img class="w-36" src="../../assets/gifit_logo.png" alt="gifit_logo">
+        </a>
+        <div class="flex flew-row gap-4">
+            <a routerLink="trending-gifs" routerLinkActive="is-active" class="p-0 h-fit text-xl text-gLight hover:text-gAccent">Trending</a>
+            <a routerLink="clips" routerLinkActive="is-active" class="p-0 h-fit text-xl text-gLight hover:text-gAccent">Clips</a>
+        </div>
+    </div>
+    <app-search></app-search>
 </div>
-<app-search></app-search>

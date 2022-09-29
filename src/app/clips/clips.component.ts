@@ -1,4 +1,5 @@
-import { Component, ElementRef, HostListener, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { Router } from '@angular/router';
 import { NgxMasonryComponent } from 'ngx-masonry';
 import { Subject, takeUntil } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -19,10 +20,11 @@ export class ClipsComponent implements OnInit {
   @ViewChildren('clipsListItems') clipsListItems?: QueryList<ElementRef>;
 
   trendingResults$ = this.dataservice.getClipsResults$();
+  totalCount = 0;
   
   private readonly destroy$ = new Subject<void>();
 
-  constructor(private giphyService: GiphyService, private dataservice: DataService, private loaderService: LoaderService, private layoutUpdateService: LayoutUpdateService) { }
+  constructor(private giphyService: GiphyService, private dataservice: DataService, private loaderService: LoaderService, private layoutUpdateService: LayoutUpdateService, public router: Router) { }
 
   ngOnInit(): void {
     this.layoutUpdateService.getLayoutUpdateTrigger$()
@@ -43,6 +45,7 @@ export class ClipsComponent implements OnInit {
       takeUntil(this.destroy$)
     )
     .subscribe((reducedTrendingResults) => {
+      this.totalCount = reducedTrendingResults.pagination.total_count;
       this.dataservice.setClipsResults$(reducedTrendingResults);
       this.layoutUpdateService.setLayoutUpdate$(true);
     })
@@ -67,7 +70,8 @@ export class ClipsComponent implements OnInit {
   playVideo(index: number): void {
     if(this.clipsListItems !== undefined) {
       let hoveredItem = this.clipsListItems.toArray()[index];
-
+      
+      hoveredItem.nativeElement.volume = 0.5;
       hoveredItem.nativeElement.muted = false;
       hoveredItem.nativeElement.play();
     }
@@ -77,6 +81,7 @@ export class ClipsComponent implements OnInit {
     if(this.clipsListItems !== undefined) {
       let hoveredItem = this.clipsListItems.toArray()[index];
       
+      hoveredItem.nativeElement.volume = 0.5;
       hoveredItem.nativeElement.muted = true;
       hoveredItem.nativeElement.pause();
     }

@@ -1,12 +1,16 @@
 <div infiniteScroll [infiniteScrollDistance]="1" [infiniteScrollThrottle]="500" (scrolled)="loadNextBatch()">
-    <p>search-result works!</p>
-    <p>{{ searchQuery$ | async }}</p>
-    <p>{{ totalCount }}</p>
+    <div class="flex flex-row justify-between text-xl text-gLight">
+        <h2>{{ searchQuery$ | async }} ({{ totalCount }})</h2>
+    </div>
+    <p></p>
+    <p></p>
     <!-- <ngx-masonry (layoutComplete)="fixLayout()" [options]="{ gutter: 10 }" #searchresult> -->
     <ngx-masonry [options]="{ gutter: 10 }" #searchresult>
-        <div ngxMasonryItem class="bg-yellow-300 min-h-fit mb-2.5" *ngFor="let searchResult of (searchResults$ | async)?.images">
-            <img class="w-12 absolute bottom-0" (click)="setFavorite(searchResult)" src="../../assets/heart.svg" alt="heart">
-            <video autoplay loop class="w-60 min-h-fit pointer-events-none" [src]="searchResult.preview"></video>
+        <div ngxMasonryItem class="bg-gBackgroundLight border-2 border-gDark min-h-fit mb-2.5" *ngFor="let searchResult of (searchResults$ | async)?.images">
+            <video autoplay loop class="w-60 min-h-fit">
+                <source [src]="searchResult.preview">
+            </video>
+            <img class="w-8 absolute bottom-2 left-2 hover:scale-110" (click)="setFavorite(searchResult)" src="../../assets/heart.svg" alt="heart">
         </div>
     </ngx-masonry>
     <app-loader></app-loader>

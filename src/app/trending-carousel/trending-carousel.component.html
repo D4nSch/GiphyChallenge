@@ -1,14 +1,13 @@
-<div>
+<div class="pb-4">
     <div class="flex flex-row justify-between text-xl text-gLight">
         <h2>Trending</h2>
-        <h2>More Trending Gifs ></h2>
+        <a routerLink="trending-gifs" class="p-0 h-fit text-xl text-gLight hover:text-gAccent">More Trending Gifs...</a>
     </div>
     <carousel [cellWidth]=240 [height]=240>
         <div class="carousel-cell bg-gBackgroundLight border-2 border-gDark" *ngFor="let trendingResult of (trendingResults$ | async)?.images">
-            <video class="w-60" loop autoplay drag-scroll-item>
+            <video class="w-60 relative" loop autoplay drag-scroll-item>
                 <source [src]="trendingResult.preview">
             </video>
-            <img class="w-12 !absolute" (click)="setFavorite(trendingResult)" src="../../assets/heart.svg" alt="heart">
         </div>
     </carousel>
 </div>

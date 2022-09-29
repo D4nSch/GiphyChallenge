@@ -13,6 +13,6 @@ export class LoaderComponent implements OnInit {
   constructor(private loaderService: LoaderService) { }
 
   ngOnInit(): void {
+    
   }
-
 }
