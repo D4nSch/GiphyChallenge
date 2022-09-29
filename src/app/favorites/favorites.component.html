@@ -1,17 +1,22 @@
-<div style="background-color: lightsalmon;">
-    <p>FAVORITES</p>
-    <!-- <ngx-masonry (layoutComplete)="fixLayout()" [options]="{ gutter: 10 }" #favorites> -->
+<div class="pb-4">
+    <div class="flex flex-row justify-between text-xl text-gLight">
+        <h2>Favorites ({{ favoriteItemCount }})</h2>
+        <h2 class="p-0 h-fit text-xl text-gLight cursor-pointer hover:text-gAccent" (click)="clearFavorites()">Clear all...</h2>
+    </div>
     <ngx-masonry [options]="{ gutter: 10 }" #favorites>
-        <div ngxMasonryItem class="bg-yellow-300 min-h-fit mb-2.5" *ngFor="let favoriteItem of (favoriteItems$ | async); index as i">
-            <video *ngIf="favoriteItem.type === 'gif'; else clips" loop autoplay class="w-60 min-h-fit">
+        <div ngxMasonryItem class="bg-gBackgroundLight border-2 border-gDark min-h-fit mb-2.5" *ngFor="let favoriteItem of (favoriteItems$ | async); index as i">
+            <video *ngIf="favoriteItem.type === 'gif'; else clips" loop autoplay class="w-[171px] min-h-fit" #favoritesListItems>
                 <source [src]="favoriteItem.preview">
             </video>
             <ng-template #clips>
-                <video loop [autoplay]="false" [muted]="true" (mouseover)="playVideo(i)" (mouseout)="stopVideo(i)" class="w-60 min-h-fit" #favoritesListItems>
+                <video loop [autoplay]="false" [muted]="true" (mouseover)="playVideo(i)" (mouseout)="stopVideo(i)" class="w-[171px] min-h-fit" #favoritesListItems>
                     <source [src]="favoriteItem.preview">
                 </video>
             </ng-template>
-            <img class="w-12 absolute bottom-0" (click)="removeFavorite(favoriteItem)" src="../../assets/heart.svg" alt="heart">
+            <img class="w-6 absolute bottom-2 left-2 hover:scale-110" (click)="removeFavorite(favoriteItem)" src="../../assets/rubbish.svg" alt="heart">
         </div>
     </ngx-masonry>
+    <div *ngIf="(favoriteItems$ | async)!.length === 0">
+        <p class="text-center text-lg text-gAccent">You've got not a single favorite yet! :(<br>Click the heart icon to add a GIF/Clip to your favorites.</p>
+    </div>
 </div>
