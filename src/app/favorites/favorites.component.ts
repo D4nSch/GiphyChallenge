@@ -15,11 +15,12 @@ export class FavoritesComponent implements OnInit {
   @ViewChild('favorites') masonry?: NgxMasonryComponent;
   @ViewChildren('favoritesListItems') favoritesListItems?: QueryList<ElementRef>;
   
-  favoriteItems$ = this.dataservice.getFavoriteItems$();
-
+  favoriteItems$ = this.dataService.getFavoriteItems$();
+  favoriteItemCount = 0;
+  
   private readonly destroy$ = new Subject<void>();
 
-  constructor(private dataservice: DataService, public loaderService: LoaderService, private layoutUpdateService: LayoutUpdateService) { }
+  constructor(private dataService: DataService, public loaderService: LoaderService, private layoutUpdateService: LayoutUpdateService) { }
 
   ngOnInit(): void {
     this.layoutUpdateService.getLayoutUpdateTrigger$()
@@ -34,6 +35,12 @@ export class FavoritesComponent implements OnInit {
         await new Promise(resolve => setTimeout(resolve, pauseTime)).then(() => this.fixLayout());
       }
     });
+
+    this.dataService.getFavoriteItems$()
+    .pipe(
+      takeUntil(this.destroy$)
+    )
+    .subscribe((favoriteItems) => this.favoriteItemCount = favoriteItems.length)
   }
 
   ngOnDestroy() {
@@ -41,8 +48,15 @@ export class FavoritesComponent implements OnInit {
     this.destroy$.complete();
   }
 
+  clearFavorites(): void {
+    this.dataService.clearFavoriteItems$();
+    if(this.favoriteItemCount > 0) {
+      this.layoutUpdateService.setLayoutUpdate$(true);
+    }
+  }
+
   removeFavorite(item: ReducedData): void {
-    this.dataservice.removeFavoriteItem$(item);
+    this.dataService.removeFavoriteItem$(item);
     this.layoutUpdateService.setLayoutUpdate$(true);
   }
 
