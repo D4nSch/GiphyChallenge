@@ -160,8 +160,8 @@ export class GiphyService {
       let reducedItem = {
         "title": item.title,
         "id": item.id,
-        "preview": item.images["preview"].mp4,
-        "original": item.images["original"].mp4,
+        "preview": item.images["fixed_width"].webp,
+        "original": item.images["fixed_width"].url,
         "type": item.type
       }
 
