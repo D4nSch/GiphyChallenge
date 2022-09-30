@@ -17,6 +17,7 @@ import { LoaderComponent } from './loader/loader.component';
 import { IvyCarouselModule } from 'angular-responsive-carousel2';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { ConfirmBoxConfigModule, DialogConfigModule, NgxAwesomePopupModule, ToastNotificationConfigModule } from '@costlydeveloper/ngx-awesome-popup';
+import { AngularResizeEventModule } from 'angular-resize-event';
 
 @NgModule({
   declarations: [
@@ -44,9 +45,10 @@ import { ConfirmBoxConfigModule, DialogConfigModule, NgxAwesomePopupModule, Toas
       globalSettings: {
         allowedNotificationsAtOnce: 5
     }}),
-    DialogConfigModule.forRoot(), // Needed for instantiating dynamic components.
-    ConfirmBoxConfigModule.forRoot(), // Needed for instantiating confirm boxes.
-    ToastNotificationConfigModule.forRoot() // Needed for instantiating toast notifications.
+    DialogConfigModule.forRoot(),
+    ConfirmBoxConfigModule.forRoot(),
+    ToastNotificationConfigModule.forRoot(),
+    AngularResizeEventModule
   ],
   providers: [],
   bootstrap: [AppComponent]

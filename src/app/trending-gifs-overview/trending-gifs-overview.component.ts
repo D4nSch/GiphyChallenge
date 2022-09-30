@@ -7,6 +7,7 @@ import { DataService } from '../services/data.service';
 import { GiphyService } from '../services/giphy.service';
 import { LayoutUpdateService } from '../services/layout-update.service';
 import { LoaderService } from '../services/loader.service';
+import { ResizedEvent } from 'angular-resize-event';
 
 @Component({
   selector: 'app-trending-gifs-overview',
@@ -25,19 +26,6 @@ export class TrendingGifsOverviewComponent implements OnInit, OnDestroy {
   constructor(private giphyService: GiphyService, private dataService: DataService, private loaderService: LoaderService, private layoutUpdateService: LayoutUpdateService) { }
 
   ngOnInit(): void {
-    this.layoutUpdateService.getLayoutUpdateTrigger$()
-    .pipe(
-      takeUntil(this.destroy$)
-    )
-    .subscribe(async () => {
-      let tries = this.layoutUpdateService.tries;
-      let pauseTime = this.layoutUpdateService.pauseTime;
-
-      for (let index = 0; index < tries; index++) {
-        await new Promise(resolve => setTimeout(resolve, pauseTime)).then(() => this.fixLayout());
-      }
-    });
-
     this.giphyService.getTrendingGifs()
     .pipe(
       takeUntil(this.destroy$)
@@ -45,7 +33,6 @@ export class TrendingGifsOverviewComponent implements OnInit, OnDestroy {
     .subscribe((reducedTrendingResults) => {
       this.totalCount = reducedTrendingResults.pagination.total_count;
       this.dataService.setTrendingResults$(reducedTrendingResults);
-      this.layoutUpdateService.setLayoutUpdate$(true);
     })
   }
 
@@ -56,7 +43,6 @@ export class TrendingGifsOverviewComponent implements OnInit, OnDestroy {
 
   setFavorite(item: ReducedData): void {
     this.dataService.addFavoriteItem$(item);
-    this.layoutUpdateService.setLayoutUpdate$(true);
   }
 
   loadNextBatch() {
@@ -64,12 +50,16 @@ export class TrendingGifsOverviewComponent implements OnInit, OnDestroy {
       this.giphyService.getNextItems("trending", environment.gTrendingGifsUrl);
     }
   }
-
+  
   // ngx-masonry seems to have trouble with undefined heights (overlapping)
-  fixLayout() {
+  async fixLayout() {
     if (this.masonry !== undefined) {
-      // this.masonry.reloadItems();
-      this.masonry.layout();
+      let tries = this.layoutUpdateService.tries;
+      let pauseTime = this.layoutUpdateService.pauseTime;
+
+      for (let index = 0; index < tries; index++) {
+        await new Promise(resolve => setTimeout(resolve, pauseTime)).then(() => this.masonry!.layout());
+      }
     }
   }
 }

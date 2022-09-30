@@ -1,12 +1,13 @@
-<div infiniteScroll [infiniteScrollDistance]="1" [infiniteScrollThrottle]="500" (scrolled)="loadNextBatch()">
+<div (resized)="fixLayout()" infiniteScroll [infiniteScrollDistance]="1" [infiniteScrollThrottle]="500" (scrolled)="loadNextBatch()">
     <div class="flex flex-row justify-between text-xl text-gLight">
         <h2>Trending Gifs ({{ totalCount }})</h2>
     </div>
     <ngx-masonry [options]="{ gutter: 10 }" #trending>
         <div ngxMasonryItem class="bg-gBackgroundLight border-2 border-gDark min-h-fit mb-2.5" *ngFor="let trendingResult of (trendingResults$ | async)?.images">
-            <video autoplay loop class="w-[171px] min-h-fit">
-                <source [src]="trendingResult.preview">
-            </video>
+            <picture>
+                <source class="w-[171px] min-h-fit" type="image/webp" [srcset]="trendingResult.preview">
+                <img class="w-[171px] min-h-fit" [src]="trendingResult.original" [alt]="trendingResult.title">
+            </picture>
             <img class="w-8 absolute bottom-2 left-2 hover:scale-110" (click)="setFavorite(trendingResult)" src="../../assets/heart.svg" alt="heart">
         </div>
     </ngx-masonry>
