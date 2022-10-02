@@ -5,9 +5,10 @@
     </div>
     <carousel [cellWidth]=240 [height]=240>
         <div class="carousel-cell bg-gBackgroundLight border-2 border-gDark" *ngFor="let trendingResult of (trendingResults$ | async)?.images">
-            <video class="w-60 relative" loop autoplay drag-scroll-item>
-                <source [src]="trendingResult.preview">
-            </video>
+            <picture>
+                <source class="w-60 relative" type="image/webp" [src]="trendingResult.preview">
+                <img class="w-60 relative" loading="lazy" [src]="trendingResult.original" [alt]="trendingResult.title">
+            </picture>
         </div>
     </carousel>
 </div>

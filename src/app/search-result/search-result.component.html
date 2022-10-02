@@ -1,15 +1,13 @@
-<div infiniteScroll [infiniteScrollDistance]="1" [infiniteScrollThrottle]="500" (scrolled)="loadNextBatch()">
+<div (resized)="fixLayout()" infiniteScroll [infiniteScrollDistance]="1" [infiniteScrollThrottle]="500" (scrolled)="loadNextBatch()">
     <div class="flex flex-row justify-between text-xl text-gLight">
         <h2>{{ searchQuery$ | async }} ({{ totalCount }})</h2>
     </div>
-    <p></p>
-    <p></p>
-    <!-- <ngx-masonry (layoutComplete)="fixLayout()" [options]="{ gutter: 10 }" #searchresult> -->
     <ngx-masonry [options]="{ gutter: 10 }" #searchresult>
         <div ngxMasonryItem class="bg-gBackgroundLight border-2 border-gDark min-h-fit mb-2.5" *ngFor="let searchResult of (searchResults$ | async)?.images">
-            <video autoplay loop class="w-60 min-h-fit">
-                <source [src]="searchResult.preview">
-            </video>
+            <picture>
+                <source class="w-[171px] min-h-fit" type="image/webp" [srcset]="searchResult.preview">
+                <img class="w-[171px] min-h-fit" [src]="searchResult.original" [alt]="searchResult.title">
+            </picture>
             <img class="w-8 absolute bottom-2 left-2 hover:scale-110" (click)="setFavorite(searchResult)" src="../../assets/heart.svg" alt="heart">
         </div>
     </ngx-masonry>

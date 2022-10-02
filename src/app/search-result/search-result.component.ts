@@ -26,19 +26,6 @@ export class SearchResultComponent implements OnInit, OnDestroy {
   constructor(private dataservice: DataService, private giphyService: GiphyService, private loaderService: LoaderService, private layoutUpdateService: LayoutUpdateService) { }
   
   ngOnInit() {
-    this.layoutUpdateService.getLayoutUpdateTrigger$()
-    .pipe(
-      takeUntil(this.destroy$)
-    )
-    .subscribe(async () => {
-      let tries = this.layoutUpdateService.tries;
-      let pauseTime = this.layoutUpdateService.pauseTime;
-
-      for (let index = 0; index < tries; index++) {
-        await new Promise(resolve => setTimeout(resolve, pauseTime)).then(() => this.fixLayout());
-      }
-    });
-
     this.dataservice.getSearchQuery$()
     .pipe(
       filter((searchQuery) => searchQuery !== ""),
@@ -52,7 +39,6 @@ export class SearchResultComponent implements OnInit, OnDestroy {
       
       this.totalCount = reducedSearchResults.pagination.total_count;
       this.dataservice.setSearchResults$(reducedSearchResults);
-      this.layoutUpdateService.setLayoutUpdate$(true);
     });
   }
 
@@ -63,7 +49,6 @@ export class SearchResultComponent implements OnInit, OnDestroy {
 
   setFavorite(item: ReducedData): void {
     this.dataservice.addFavoriteItem$(item);
-    this.layoutUpdateService.setLayoutUpdate$(true);
   }
 
   loadNextBatch() {
@@ -73,10 +58,14 @@ export class SearchResultComponent implements OnInit, OnDestroy {
   }
 
   // ngx-masonry seems to have trouble with undefined heights (overlapping)
-  fixLayout() {
+  async fixLayout() {
     if (this.masonry !== undefined) {
-      // this.masonry.reloadItems();
-      this.masonry.layout();
+      let tries = this.layoutUpdateService.tries;
+      let pauseTime = this.layoutUpdateService.pauseTime;
+
+      for (let index = 0; index < tries; index++) {
+        await new Promise(resolve => setTimeout(resolve, pauseTime)).then(() => this.masonry!.layout());
+      }
     }
   }
 }

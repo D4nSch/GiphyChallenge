@@ -23,19 +23,6 @@ export class FavoritesComponent implements OnInit {
   constructor(private dataService: DataService, public loaderService: LoaderService, private layoutUpdateService: LayoutUpdateService) { }
 
   ngOnInit(): void {
-    this.layoutUpdateService.getLayoutUpdateTrigger$()
-    .pipe(
-      takeUntil(this.destroy$)
-    )
-    .subscribe(async () => {
-      let tries = this.layoutUpdateService.tries;
-      let pauseTime = this.layoutUpdateService.pauseTime;
-
-      for (let index = 0; index < tries; index++) {
-        await new Promise(resolve => setTimeout(resolve, pauseTime)).then(() => this.fixLayout());
-      }
-    });
-
     this.dataService.getFavoriteItems$()
     .pipe(
       takeUntil(this.destroy$)
@@ -50,14 +37,11 @@ export class FavoritesComponent implements OnInit {
 
   clearFavorites(): void {
     this.dataService.clearFavoriteItems$();
-    if(this.favoriteItemCount > 0) {
-      this.layoutUpdateService.setLayoutUpdate$(true);
-    }
   }
 
   removeFavorite(item: ReducedData): void {
     this.dataService.removeFavoriteItem$(item);
-    this.layoutUpdateService.setLayoutUpdate$(true);
+    this.fixLayout();
   }
 
   playVideo(index: number): void {
@@ -79,10 +63,14 @@ export class FavoritesComponent implements OnInit {
   }
 
   // ngx-masonry seems to have trouble with undefined heights (overlapping)
-  fixLayout() {
+  async fixLayout() {
     if (this.masonry !== undefined) {
-      // this.masonry.reloadItems();
-      this.masonry.layout();
+      let tries = this.layoutUpdateService.tries;
+      let pauseTime = this.layoutUpdateService.pauseTime;
+
+      for (let index = 0; index < tries; index++) {
+        await new Promise(resolve => setTimeout(resolve, pauseTime)).then(() => this.masonry!.layout());
+      }
     }
   }
 }

@@ -1,16 +1,19 @@
-<div class="pb-4">
+<div (resized)="fixLayout()" class="pb-4">
     <div class="flex flex-row justify-between text-xl text-gLight">
         <h2>Favorites ({{ favoriteItemCount }})</h2>
         <h2 class="p-0 h-fit text-xl text-gLight cursor-pointer hover:text-gAccent" (click)="clearFavorites()">Clear all...</h2>
     </div>
     <ngx-masonry [options]="{ gutter: 10 }" #favorites>
         <div ngxMasonryItem class="bg-gBackgroundLight border-2 border-gDark min-h-fit mb-2.5" *ngFor="let favoriteItem of (favoriteItems$ | async); index as i">
-            <video *ngIf="favoriteItem.type === 'gif'; else clips" loop autoplay class="w-[171px] min-h-fit" #favoritesListItems>
-                <source [src]="favoriteItem.preview">
-            </video>
+            <picture *ngIf="favoriteItem.type === 'gif'; else clips" #favoritesListItems>
+            <!-- <picture *ngIf="favoriteItem.type === 'gif'" #favoritesListItems> -->
+                <source class="w-[171px] min-h-fit" type="image/webp" [srcset]="favoriteItem.preview">
+                <img class="w-[171px] min-h-fit" [src]="favoriteItem.original" [alt]="favoriteItem.title">
+            </picture>
             <ng-template #clips>
+                <!-- TODO: SHOW GIF WHEN CLICK SHOW MP4 -->
                 <video loop [autoplay]="false" [muted]="true" (mouseover)="playVideo(i)" (mouseout)="stopVideo(i)" class="w-[171px] min-h-fit" #favoritesListItems>
-                    <source [src]="favoriteItem.preview">
+                    <source [src]="favoriteItem.original">
                 </video>
             </ng-template>
             <img class="w-6 absolute bottom-2 left-2 hover:scale-110" (click)="removeFavorite(favoriteItem)" src="../../assets/rubbish.svg" alt="heart">
