@@ -1,13 +1,16 @@
-<div infiniteScroll [infiniteScrollDistance]="1" [infiniteScrollThrottle]="500" (scrolled)="loadNextBatch()">
+<div *ngIf="videoData">
+    <video (click)="videoData = undefined" loop [autoplay]="true" [muted]="false" class="w-fit fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] z-[10002]" #clipsListItems>
+        <source [src]="videoData.original">
+    </video>    
+</div>
+<div (resized)="fixLayout()" infiniteScroll [infiniteScrollDistance]="1" [infiniteScrollThrottle]="500" (scrolled)="loadNextBatch()">
     <div class="flex flex-row justify-between text-xl text-gLight">
         <h2>Clips ({{ totalCount }})</h2>
         <a [hidden]="router.url === '/clips'" routerLink="clips" class="p-0 h-fit text-xl text-gLight hover:text-gAccent">More Clips...</a>
     </div>
     <ngx-masonry [options]="{ gutter: 10 }" #clips>
         <div ngxMasonryItem class="bg-gBackgroundLight border-2 border-gDark min-h-fit mb-2.5" *ngFor="let trendingResult of (trendingResults$ | async)?.images; index as i">
-            <video loop [autoplay]="false" [muted]="true" (mouseover)="playVideo(i)" (mouseout)="stopVideo(i)" class="w-[171px] min-h-fit" #clipsListItems>
-                <source [src]="trendingResult.preview">
-            </video>
+            <img (click)="videoData = trendingResult" class="w-[171px] min-h-fit" [src]="trendingResult.preview" [alt]="trendingResult.title">
             <img class="w-8 absolute bottom-2 left-2 hover:scale-110" (click)="setFavorite(trendingResult)" src="../../assets/heart.svg" alt="heart">
         </div>
     </ngx-masonry>

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgxMasonryComponent } from 'ngx-masonry';
 import { Subject, takeUntil } from 'rxjs';
@@ -17,29 +17,17 @@ import { LoaderService } from '../services/loader.service';
 })
 export class ClipsComponent implements OnInit {
   @ViewChild('clips') masonry?: NgxMasonryComponent;
-  @ViewChildren('clipsListItems') clipsListItems?: QueryList<ElementRef>;
+  // @ViewChildren('clipsListItems') clipsListItems?: QueryList<ElementRef>;
 
   trendingResults$ = this.dataservice.getClipsResults$();
   totalCount = 0;
-  
+  videoData?: ReducedData;
+
   private readonly destroy$ = new Subject<void>();
 
   constructor(private giphyService: GiphyService, private dataservice: DataService, private loaderService: LoaderService, private layoutUpdateService: LayoutUpdateService, public router: Router) { }
 
   ngOnInit(): void {
-    this.layoutUpdateService.getLayoutUpdateTrigger$()
-    .pipe(
-      takeUntil(this.destroy$)
-    )
-    .subscribe(async () => {
-      let tries = this.layoutUpdateService.tries;
-      let pauseTime = this.layoutUpdateService.pauseTime;
-
-      for (let index = 0; index < tries; index++) {
-        await new Promise(resolve => setTimeout(resolve, pauseTime)).then(() => this.fixLayout());
-      }
-    });
-
     this.giphyService.getTrendingClips()
     .pipe(
       takeUntil(this.destroy$)
@@ -47,7 +35,6 @@ export class ClipsComponent implements OnInit {
     .subscribe((reducedTrendingResults) => {
       this.totalCount = reducedTrendingResults.pagination.total_count;
       this.dataservice.setClipsResults$(reducedTrendingResults);
-      this.layoutUpdateService.setLayoutUpdate$(true);
     })
   }
 
@@ -59,6 +46,7 @@ export class ClipsComponent implements OnInit {
   setFavorite(reducedData: ReducedData): void {
     this.dataservice.addFavoriteItem$(reducedData);
     this.layoutUpdateService.setLayoutUpdate$(true);
+    this.fixLayout();
   }
 
   loadNextBatch() {
@@ -67,31 +55,35 @@ export class ClipsComponent implements OnInit {
     }
   }
 
-  playVideo(index: number): void {
-    if(this.clipsListItems !== undefined) {
-      let hoveredItem = this.clipsListItems.toArray()[index];
+  // playVideo(index: number): void {
+  //   if(this.clipsListItems !== undefined) {
+  //     let hoveredItem = this.clipsListItems.toArray()[index];
       
-      hoveredItem.nativeElement.volume = 0.5;
-      hoveredItem.nativeElement.muted = false;
-      hoveredItem.nativeElement.play();
-    }
-  }
+  //     hoveredItem.nativeElement.volume = 0.5;
+  //     hoveredItem.nativeElement.muted = false;
+  //     hoveredItem.nativeElement.play();
+  //   }
+  // }
   
-  stopVideo(index: number): void {
-    if(this.clipsListItems !== undefined) {
-      let hoveredItem = this.clipsListItems.toArray()[index];
+  // stopVideo(index: number): void {
+  //   if(this.clipsListItems !== undefined) {
+  //     let hoveredItem = this.clipsListItems.toArray()[index];
       
-      hoveredItem.nativeElement.volume = 0.5;
-      hoveredItem.nativeElement.muted = true;
-      hoveredItem.nativeElement.pause();
-    }
-  }
+  //     hoveredItem.nativeElement.volume = 0.5;
+  //     hoveredItem.nativeElement.muted = true;
+  //     hoveredItem.nativeElement.pause();
+  //   }
+  // }
 
   // ngx-masonry seems to have trouble with undefined heights (overlapping)
-  fixLayout() {
+  async fixLayout() {
     if (this.masonry !== undefined) {
-      // this.masonry.reloadItems();
-      this.masonry.layout();
+      let tries = this.layoutUpdateService.tries;
+      let pauseTime = this.layoutUpdateService.pauseTime;
+
+      for (let index = 0; index < tries; index++) {
+        await new Promise(resolve => setTimeout(resolve, pauseTime)).then(() => this.masonry!.layout());
+      }
     }
   }
 }
