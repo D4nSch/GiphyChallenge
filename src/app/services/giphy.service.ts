@@ -182,7 +182,7 @@ export class GiphyService {
       let reducedItem = {
         "title": item.title,
         "id": item.id,
-        "preview": item.video.assets["360p"].url,
+        "preview": item.images["fixed_width"].url,
         "original": item.video.assets["360p"].url,
         "type": item.type
       }
