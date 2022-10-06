@@ -34,6 +34,24 @@ body {
 
     .text-wrapper {
         font-weight: bold;
-        color: theme('colors.gLight');;
+        color: theme('colors.gLight');
+    }
+}
+
+.light-to-accent {
+    fill: theme('colors.gLight');
+
+    &:hover {
+        fill: theme('colors.gAccent');
+        transition: fill .3s ease;
+    }
+}
+
+.accent-to-light {
+    fill: theme('colors.gAccent');
+
+    &:hover {
+        fill: theme('colors.gLight');
+        transition: fill .3s ease;
     }
 }

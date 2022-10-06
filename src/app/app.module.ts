@@ -18,6 +18,7 @@ import { IvyCarouselModule } from 'angular-responsive-carousel2';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { ConfirmBoxConfigModule, DialogConfigModule, NgxAwesomePopupModule, ToastNotificationConfigModule } from '@costlydeveloper/ngx-awesome-popup';
 import { AngularResizeEventModule } from 'angular-resize-event';
+import { DetailViewComponent } from './detail-view/detail-view.component';
 
 @NgModule({
   declarations: [
@@ -30,6 +31,7 @@ import { AngularResizeEventModule } from 'angular-resize-event';
     ClipsComponent,
     SearchComponent,
     LoaderComponent,
+    DetailViewComponent,
   ],
   imports: [
     BrowserModule,
