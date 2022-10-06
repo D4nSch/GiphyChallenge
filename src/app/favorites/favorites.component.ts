@@ -1,9 +1,9 @@
 import { Component, ElementRef, OnChanges, OnInit, QueryList, SimpleChanges, ViewChild, ViewChildren } from '@angular/core';
 import { NgxMasonryComponent } from 'ngx-masonry';
 import { Subject, takeUntil } from 'rxjs';
+import { environment } from '../../environments/environment';
 import { ReducedData } from '../models/giphyresponse';
 import { DataService } from '../services/data.service';
-import { LayoutUpdateService } from '../services/layout-update.service';
 import { LoaderService } from '../services/loader.service';
 
 @Component({
@@ -13,21 +13,25 @@ import { LoaderService } from '../services/loader.service';
 })
 export class FavoritesComponent implements OnInit {
   @ViewChild('favorites') masonry?: NgxMasonryComponent;
-  @ViewChildren('favoritesListItems') favoritesListItems?: QueryList<ElementRef>;
   
   favoriteItems$ = this.dataService.getFavoriteItems$();
   favoriteItemCount = 0;
+
+  detailData?: ReducedData;
   
   private readonly destroy$ = new Subject<void>();
 
-  constructor(private dataService: DataService, public loaderService: LoaderService, private layoutUpdateService: LayoutUpdateService) { }
+  constructor(private dataService: DataService, public loaderService: LoaderService) { }
 
   ngOnInit(): void {
     this.dataService.getFavoriteItems$()
     .pipe(
       takeUntil(this.destroy$)
     )
-    .subscribe((favoriteItems) => this.favoriteItemCount = favoriteItems.length)
+    .subscribe((favoriteItems) => {
+      this.fixLayout();
+      this.favoriteItemCount = favoriteItems.length;
+    })
   }
 
   ngOnDestroy() {
@@ -41,33 +45,18 @@ export class FavoritesComponent implements OnInit {
 
   removeFavorite(item: ReducedData): void {
     this.dataService.removeFavoriteItem$(item);
-    this.fixLayout();
   }
 
-  playVideo(index: number): void {
-    if(this.favoritesListItems !== undefined) {
-      let hoveredItem = this.favoritesListItems.toArray()[index];
-
-      hoveredItem.nativeElement.muted = false;
-      hoveredItem.nativeElement.play();
-    }
-  }
-  
-  stopVideo(index: number): void {
-    if(this.favoritesListItems !== undefined) {
-      let hoveredItem = this.favoritesListItems.toArray()[index];
-      
-      hoveredItem.nativeElement.muted = true;
-      hoveredItem.nativeElement.pause();
-    }
+  selectItem(selectedItem: ReducedData): void {
+    this.dataService.setSelectedItem$(selectedItem);
   }
 
   // ngx-masonry seems to have trouble with undefined heights (overlapping)
   async fixLayout() {
     if (this.masonry !== undefined) {
-      let tries = this.layoutUpdateService.tries;
-      let pauseTime = this.layoutUpdateService.pauseTime;
-
+      let tries = environment.layoutUpdateTries;
+      let pauseTime = environment.layoutUpdatePauseTime;
+      
       for (let index = 0; index < tries; index++) {
         await new Promise(resolve => setTimeout(resolve, pauseTime)).then(() => this.masonry!.layout());
       }

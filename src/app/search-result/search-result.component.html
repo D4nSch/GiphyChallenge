@@ -4,11 +4,11 @@
     </div>
     <ngx-masonry [options]="{ gutter: 10 }" #searchresult>
         <div ngxMasonryItem class="bg-gBackgroundLight border-2 border-gDark min-h-fit mb-2.5" *ngFor="let searchResult of (searchResults$ | async)?.images">
-            <picture>
-                <source class="w-[171px] min-h-fit" type="image/webp" [srcset]="searchResult.preview">
-                <img class="w-[171px] min-h-fit" [src]="searchResult.original" [alt]="searchResult.title">
-            </picture>
-            <img class="w-8 absolute bottom-2 left-2 hover:scale-110" (click)="setFavorite(searchResult)" src="../../assets/heart.svg" alt="heart">
+            <img class="w-[171px] min-h-fit" (click)="selectItem(searchResult)" [src]="searchResult.original" [alt]="searchResult.title">
+            <!-- <img class="w-8 absolute bottom-2 left-2 hover:scale-110" (click)="setFavorite(searchResult)" src="../../assets/heart.svg" alt="heart"> -->
+            <svg class="absolute bottom-2 left-2 hover:scale-110 w-8" (click)="setFavorite(searchResult)" viewBox="0 0 167.32 148.43">
+                <path class="light-to-accent" d="M83.66,148.43,10.25,66.74a40,40,0,1,1,59.5-53.47L83.66,28.74,97.57,13.26a40,40,0,0,1,59.51,53.48Z"/>
+            </svg>
         </div>
     </ngx-masonry>
     <app-loader></app-loader>

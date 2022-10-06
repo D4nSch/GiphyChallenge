@@ -6,7 +6,6 @@ import { environment } from '../../environments/environment';
 import { ReducedData } from '../models/giphyresponse';
 import { DataService } from '../services/data.service';
 import { GiphyService } from '../services/giphy.service';
-import { LayoutUpdateService } from '../services/layout-update.service';
 import { LoaderService } from '../services/loader.service';
 
 @Component({
@@ -21,11 +20,11 @@ export class ClipsComponent implements OnInit {
 
   trendingResults$ = this.dataservice.getClipsResults$();
   totalCount = 0;
-  videoData?: ReducedData;
+  detailData?: ReducedData;
 
   private readonly destroy$ = new Subject<void>();
 
-  constructor(private giphyService: GiphyService, private dataservice: DataService, private loaderService: LoaderService, private layoutUpdateService: LayoutUpdateService, public router: Router) { }
+  constructor(private giphyService: GiphyService, private dataservice: DataService, private loaderService: LoaderService, public router: Router) { }
 
   ngOnInit(): void {
     this.giphyService.getTrendingClips()
@@ -45,8 +44,10 @@ export class ClipsComponent implements OnInit {
 
   setFavorite(reducedData: ReducedData): void {
     this.dataservice.addFavoriteItem$(reducedData);
-    this.layoutUpdateService.setLayoutUpdate$(true);
-    this.fixLayout();
+  }
+
+  selectItem(selectedItem: ReducedData): void {
+    this.dataservice.setSelectedItem$(selectedItem);
   }
 
   loadNextBatch() {
@@ -78,8 +79,8 @@ export class ClipsComponent implements OnInit {
   // ngx-masonry seems to have trouble with undefined heights (overlapping)
   async fixLayout() {
     if (this.masonry !== undefined) {
-      let tries = this.layoutUpdateService.tries;
-      let pauseTime = this.layoutUpdateService.pauseTime;
+      let tries = environment.layoutUpdateTries;
+      let pauseTime = environment.layoutUpdatePauseTime;
 
       for (let index = 0; index < tries; index++) {
         await new Promise(resolve => setTimeout(resolve, pauseTime)).then(() => this.masonry!.layout());

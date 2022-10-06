@@ -5,9 +5,7 @@ import { environment } from '../../environments/environment';
 import { ReducedData } from '../models/giphyresponse';
 import { DataService } from '../services/data.service';
 import { GiphyService } from '../services/giphy.service';
-import { LayoutUpdateService } from '../services/layout-update.service';
 import { LoaderService } from '../services/loader.service';
-import { ResizedEvent } from 'angular-resize-event';
 
 @Component({
   selector: 'app-trending-gifs-overview',
@@ -23,7 +21,7 @@ export class TrendingGifsOverviewComponent implements OnInit, OnDestroy {
   
   private readonly destroy$ = new Subject<void>();
 
-  constructor(private giphyService: GiphyService, private dataService: DataService, private loaderService: LoaderService, private layoutUpdateService: LayoutUpdateService) { }
+  constructor(private giphyService: GiphyService, private dataService: DataService, private loaderService: LoaderService) { }
 
   ngOnInit(): void {
     this.giphyService.getTrendingGifs()
@@ -45,6 +43,10 @@ export class TrendingGifsOverviewComponent implements OnInit, OnDestroy {
     this.dataService.addFavoriteItem$(item);
   }
 
+  selectItem(selectedItem: ReducedData): void {
+    this.dataService.setSelectedItem$(selectedItem);
+  }
+
   loadNextBatch() {
     if(this.loaderService.isLoading.getValue() === false) {
       this.giphyService.getNextItems("trending", environment.gTrendingGifsUrl);
@@ -54,8 +56,8 @@ export class TrendingGifsOverviewComponent implements OnInit, OnDestroy {
   // ngx-masonry seems to have trouble with undefined heights (overlapping)
   async fixLayout() {
     if (this.masonry !== undefined) {
-      let tries = this.layoutUpdateService.tries;
-      let pauseTime = this.layoutUpdateService.pauseTime;
+      let tries = environment.layoutUpdateTries;
+      let pauseTime = environment.layoutUpdatePauseTime;
 
       for (let index = 0; index < tries; index++) {
         await new Promise(resolve => setTimeout(resolve, pauseTime)).then(() => this.masonry!.layout());

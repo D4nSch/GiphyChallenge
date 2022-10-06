@@ -6,7 +6,6 @@ import { LoaderService } from '../services/loader.service';
 import { NgxMasonryComponent } from 'ngx-masonry';
 import { ReducedData } from '../models/giphyresponse';
 import { environment } from '../../environments/environment';
-import { LayoutUpdateService } from '../services/layout-update.service';
 
 @Component({
   selector: 'app-search-result',
@@ -23,7 +22,7 @@ export class SearchResultComponent implements OnInit, OnDestroy {
 
   private readonly destroy$ = new Subject<void>();
 
-  constructor(private dataservice: DataService, private giphyService: GiphyService, private loaderService: LoaderService, private layoutUpdateService: LayoutUpdateService) { }
+  constructor(private dataservice: DataService, private giphyService: GiphyService, private loaderService: LoaderService) { }
   
   ngOnInit() {
     this.dataservice.getSearchQuery$()
@@ -51,6 +50,10 @@ export class SearchResultComponent implements OnInit, OnDestroy {
     this.dataservice.addFavoriteItem$(item);
   }
 
+  selectItem(selectedItem: ReducedData): void {
+    this.dataservice.setSelectedItem$(selectedItem);
+  }
+
   loadNextBatch() {
     if(this.loaderService.isLoading.getValue() === false) {
       this.giphyService.getNextItems("search", environment.gSearchGifsUrl);
@@ -60,8 +63,8 @@ export class SearchResultComponent implements OnInit, OnDestroy {
   // ngx-masonry seems to have trouble with undefined heights (overlapping)
   async fixLayout() {
     if (this.masonry !== undefined) {
-      let tries = this.layoutUpdateService.tries;
-      let pauseTime = this.layoutUpdateService.pauseTime;
+      let tries = environment.layoutUpdateTries;
+      let pauseTime = environment.layoutUpdatePauseTime;
 
       for (let index = 0; index < tries; index++) {
         await new Promise(resolve => setTimeout(resolve, pauseTime)).then(() => this.masonry!.layout());
