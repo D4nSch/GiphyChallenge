@@ -3,7 +3,6 @@ import { FormControl } from '@angular/forms';
 import { NavigationEnd, NavigationStart, Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged, filter, forkJoin, map, mergeMap, Subject, takeUntil, tap } from 'rxjs';
 import { DataService } from '../../services/data.service';
-import { GiphyService } from '../../services/giphy.service';
 
 @Component({
   selector: 'app-search',
@@ -15,7 +14,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   searchQuery = new FormControl();
   private readonly destroy$ = new Subject<void>();
 
-  constructor(private router: Router, private dataservice: DataService, private giphyService: GiphyService) { }
+  constructor(private router: Router, private dataservice: DataService) { }
 
   ngOnInit() {
     this.searchQuery.valueChanges

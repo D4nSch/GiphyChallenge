@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { BehaviorSubject, delay, map, take, tap } from 'rxjs';
+import { delay, map, take, tap } from 'rxjs';
 import { GiphyResponseGifs, GiphyResponseClips, ReducedData, Clip } from '../models/giphyresponse';
 import { DataService } from './data.service';
 import { LoaderService } from './loader.service';
-import { LayoutUpdateService } from './layout-update.service';
 import { NotificationService } from './notification.service';
 
 @Injectable({
@@ -22,7 +21,7 @@ export class GiphyService {
   totalCount = 0;
   showLoaderTime = 1000;
 
-  constructor(private http: HttpClient, private dataservice: DataService, private loaderService: LoaderService, private layoutUpdateService: LayoutUpdateService, private notificationService: NotificationService) { }
+  constructor(private http: HttpClient, private dataservice: DataService, private loaderService: LoaderService, private notificationService: NotificationService) { }
   
   getSearchGifs(searchQuery: string) {
     const params = new HttpParams()
@@ -133,15 +132,12 @@ export class GiphyService {
         switch (category) {
           case "search":
             this.dataservice.setSearchResults$(reducedGiphyResponse);
-            this.layoutUpdateService.setLayoutUpdate$(true);
             break;
           case "trending":
             this.dataservice.setTrendingResults$(reducedGiphyResponse);
-            this.layoutUpdateService.setLayoutUpdate$(true);
             break;
           case "clips":
             this.dataservice.setClipsResults$(reducedGiphyResponse);
-            this.layoutUpdateService.setLayoutUpdate$(true);
             break;
           default:
             break;
