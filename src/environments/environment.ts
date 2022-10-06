@@ -8,6 +8,8 @@ export const environment = {
   gSearchGifsUrl: "https://api.giphy.com/v1/gifs/search",
   gTrendingGifsUrl: "https://api.giphy.com/v1/gifs/trending",
   gTrendingClipsUrl: "https://api.giphy.com/v1/clips/trending",
+  layoutUpdateTries: 10,
+  layoutUpdatePauseTime: 150
 };
 
 /*
