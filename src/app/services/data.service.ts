@@ -16,6 +16,8 @@ export class DataService {
   private searchResults$ = new Subject<ReducedGiphyResponse>;
   private trendingResults$ = new Subject<ReducedGiphyResponse>;
   private clipsResults$ = new Subject<ReducedGiphyResponse>;
+  
+  private selectedItem$ = new Subject<ReducedData | undefined>;
 
   private favoriteItems$ = new BehaviorSubject<ReducedData[]>(JSON.parse(localStorage.getItem("favoriteItemsList")?.length ? localStorage.getItem("favoriteItemsList")! : "[]"));
 
@@ -56,6 +58,14 @@ export class DataService {
     this.favoriteItems$.next(newFavoriteItemsList);
     
     this.notificationService.toastNotification("GIF/Clip removed from favorites!");
+  }
+
+  getSelectedItem$(): Observable<ReducedData | undefined> {
+    return this.selectedItem$.asObservable();
+  }
+
+  setSelectedItem$(selectedItem: ReducedData | undefined) {
+    this.selectedItem$.next(selectedItem);
   }
 
   getClipsResults$(): Observable<ReducedGiphyResponse> {
