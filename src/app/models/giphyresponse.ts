@@ -75,7 +75,8 @@ interface ReducedData {
     id: string,
     preview: string,
     original: string
-    type: string
+    type: string,
+    favorite: boolean
 }
 
 interface Pagination {
