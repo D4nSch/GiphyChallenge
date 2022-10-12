@@ -1,11 +1,12 @@
 import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { filter, map, Observable, of, Subject, switchMap, takeUntil, tap } from 'rxjs';
+import { combineLatest, filter, map, Observable, of, Subject, switchMap, takeUntil, tap } from 'rxjs';
 import { DataService } from '../services/data.service';
 import { GiphyService } from '../services/giphy.service';
 import { LoaderService } from '../services/loader.service';
 import { NgxMasonryComponent } from 'ngx-masonry';
 import { ReducedData } from '../models/giphyresponse';
 import { environment } from '../../environments/environment';
+import { DataTransformerService } from '../services/data-transformer.service';
 
 @Component({
   selector: 'app-search-result',
@@ -16,29 +17,36 @@ import { environment } from '../../environments/environment';
 export class SearchResultComponent implements OnInit, OnDestroy {
   @ViewChild('searchresult') masonry?: NgxMasonryComponent;
 
-  searchResults$ = this.dataservice.getSearchResults$();
-  searchQuery$ = this.dataservice.getSearchQuery$();
+  searchResults$ = this.dataService.getSearchResults$();
+  searchQuery$ = this.dataService.getSearchQuery$();
   totalCount = 0;
 
   private readonly destroy$ = new Subject<void>();
 
-  constructor(private dataservice: DataService, private giphyService: GiphyService, private loaderService: LoaderService) { }
+  constructor(private dataService: DataService, private giphyService: GiphyService, private loaderService: LoaderService, private dataTransformerService: DataTransformerService) { }
   
   ngOnInit() {
-    this.dataservice.getSearchQuery$()
+    this.dataService.getSearchQuery$()
     .pipe(
       filter((searchQuery) => searchQuery !== ""),
       switchMap((searchQuery) => this.giphyService.getSearchGifs(searchQuery)),
       takeUntil(this.destroy$)
     )
     .subscribe((reducedSearchResults) => {
-      console.group("%c GifIt: reducedSearchResults "+"", "color: #43F2A7");
-        console.log(reducedSearchResults);
-      console.groupEnd();
-      
       this.totalCount = reducedSearchResults.pagination.total_count;
-      this.dataservice.setSearchResults$(reducedSearchResults);
+      this.dataService.setSearchResults$(reducedSearchResults);
     });
+
+    combineLatest([
+      this.dataService.getSearchResults$(),
+      this.dataService.getFavoriteItems$()
+    ])
+    .pipe(
+      map((result) => this.dataTransformerService.updateFavoriteStatusInitial(result[0], result[1])),
+      // tap(() => {console.log("SearchResult combinelatest")}),
+      takeUntil(this.destroy$)
+    )
+    .subscribe();
   }
 
   ngOnDestroy() {
@@ -47,11 +55,11 @@ export class SearchResultComponent implements OnInit, OnDestroy {
   }
 
   setFavorite(item: ReducedData): void {
-    this.dataservice.addFavoriteItem$(item);
+    this.dataService.addFavoriteItem$(item);
   }
 
   selectItem(selectedItem: ReducedData): void {
-    this.dataservice.setSelectedItem$(selectedItem);
+    this.dataService.setSelectedItem$(selectedItem);
   }
 
   loadNextBatch() {

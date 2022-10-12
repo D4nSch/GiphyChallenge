@@ -1,9 +1,10 @@
 import { Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgxMasonryComponent } from 'ngx-masonry';
-import { Subject, takeUntil } from 'rxjs';
+import { combineLatest, concat, forkJoin, map, of, Subject, switchMap, take, takeLast, takeUntil, tap, withLatestFrom, zip } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { ReducedData } from '../models/giphyresponse';
+import { ReducedData, ReducedGiphyResponse } from '../models/giphyresponse';
+import { DataTransformerService } from '../services/data-transformer.service';
 import { DataService } from '../services/data.service';
 import { GiphyService } from '../services/giphy.service';
 import { LoaderService } from '../services/loader.service';
@@ -18,13 +19,13 @@ export class ClipsComponent implements OnInit {
   @ViewChild('clips') masonry?: NgxMasonryComponent;
   // @ViewChildren('clipsListItems') clipsListItems?: QueryList<ElementRef>;
 
-  trendingResults$ = this.dataservice.getClipsResults$();
+  trendingResults$ = this.dataService.getClipsResults$();
   totalCount = 0;
   detailData?: ReducedData;
 
   private readonly destroy$ = new Subject<void>();
 
-  constructor(private giphyService: GiphyService, private dataservice: DataService, private loaderService: LoaderService, public router: Router) { }
+  constructor(private giphyService: GiphyService, private dataService: DataService, private loaderService: LoaderService, public router: Router, private dataTransformerService: DataTransformerService) { }
 
   ngOnInit(): void {
     this.giphyService.getTrendingClips()
@@ -33,8 +34,19 @@ export class ClipsComponent implements OnInit {
     )
     .subscribe((reducedTrendingResults) => {
       this.totalCount = reducedTrendingResults.pagination.total_count;
-      this.dataservice.setClipsResults$(reducedTrendingResults);
+      this.dataService.setClipsResults$(reducedTrendingResults);
     })
+
+    combineLatest([
+      this.dataService.getClipsResults$(),
+      this.dataService.getFavoriteItems$()
+    ])
+    .pipe(
+      map((result) => this.dataTransformerService.updateFavoriteStatusInitial(result[0], result[1])),
+      // tap(() => {console.log("Clips combinelatest")}),
+      takeUntil(this.destroy$)
+    )
+    .subscribe();
   }
 
   ngOnDestroy() {
@@ -43,11 +55,11 @@ export class ClipsComponent implements OnInit {
   }
 
   setFavorite(reducedData: ReducedData): void {
-    this.dataservice.addFavoriteItem$(reducedData);
+    this.dataService.addFavoriteItem$(reducedData);
   }
 
   selectItem(selectedItem: ReducedData): void {
-    this.dataservice.setSelectedItem$(selectedItem);
+    this.dataService.setSelectedItem$(selectedItem);
   }
 
   loadNextBatch() {
@@ -56,6 +68,7 @@ export class ClipsComponent implements OnInit {
     }
   }
 
+  // TODO: FUTURE TASK, SHOW MP4 ON HOVER
   // playVideo(index: number): void {
   //   if(this.clipsListItems !== undefined) {
   //     let hoveredItem = this.clipsListItems.toArray()[index];

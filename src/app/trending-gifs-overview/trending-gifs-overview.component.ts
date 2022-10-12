@@ -1,8 +1,9 @@
 import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NgxMasonryComponent } from 'ngx-masonry';
-import { Subject, takeUntil } from 'rxjs';
+import { combineLatest, forkJoin, map, of, Subject, switchMap, takeUntil, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { ReducedData } from '../models/giphyresponse';
+import { DataTransformerService } from '../services/data-transformer.service';
 import { DataService } from '../services/data.service';
 import { GiphyService } from '../services/giphy.service';
 import { LoaderService } from '../services/loader.service';
@@ -21,7 +22,7 @@ export class TrendingGifsOverviewComponent implements OnInit, OnDestroy {
   
   private readonly destroy$ = new Subject<void>();
 
-  constructor(private giphyService: GiphyService, private dataService: DataService, private loaderService: LoaderService) { }
+  constructor(private giphyService: GiphyService, private dataService: DataService, private loaderService: LoaderService, private dataTransformerService: DataTransformerService) { }
 
   ngOnInit(): void {
     this.giphyService.getTrendingGifs()
@@ -32,6 +33,17 @@ export class TrendingGifsOverviewComponent implements OnInit, OnDestroy {
       this.totalCount = reducedTrendingResults.pagination.total_count;
       this.dataService.setTrendingResults$(reducedTrendingResults);
     })
+
+    combineLatest([
+      this.dataService.getTrendingResults$(),
+      this.dataService.getFavoriteItems$()
+    ])
+    .pipe(
+      map((result) => this.dataTransformerService.updateFavoriteStatusInitial(result[0], result[1])),
+      // tap(() => {console.log("Trending combinelatest")}),
+      takeUntil(this.destroy$)
+    )
+    .subscribe();
   }
 
   ngOnDestroy() {
@@ -58,7 +70,7 @@ export class TrendingGifsOverviewComponent implements OnInit, OnDestroy {
     if (this.masonry !== undefined) {
       let tries = environment.layoutUpdateTries;
       let pauseTime = environment.layoutUpdatePauseTime;
-
+      
       for (let index = 0; index < tries; index++) {
         await new Promise(resolve => setTimeout(resolve, pauseTime)).then(() => this.masonry!.layout());
       }
