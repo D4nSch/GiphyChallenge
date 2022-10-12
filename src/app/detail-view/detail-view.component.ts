@@ -12,7 +12,6 @@ export class DetailViewComponent implements OnInit {
   @ViewChild('detailViewItem') detailViewItem?: ElementRef;
   
   detailData?: ReducedData;
-  alreadyFavorite = false;
   muteClip = false;
 
   private readonly destroy$ = new Subject<void>();
@@ -22,19 +21,10 @@ export class DetailViewComponent implements OnInit {
   ngOnInit(): void {
     this.dataService.getSelectedItem$()
     .pipe(
-      switchMap((selectedItemData) => {
-        return combineLatest([of(selectedItemData), this.dataService.getFavoriteItems$()]);
-      }),
       takeUntil(this.destroy$)
     ).
-    subscribe((results) => {
-      let duplicateItemsList = results[1].filter(item => item.id === results[0]?.id);
-      if(duplicateItemsList.length > 0) {
-        this.alreadyFavorite = true;
-      }
-      
-      console.log(this.alreadyFavorite);
-      this.detailData = results[0];
+    subscribe((result) => {
+      this.detailData = result;
     })
   }
 
@@ -51,7 +41,6 @@ export class DetailViewComponent implements OnInit {
   }
 
   deselectItem(selectedItem: ReducedData | undefined): void {
-    this.alreadyFavorite = false;
     this.muteClip = false;
     this.dataService.setSelectedItem$(selectedItem);
   }
@@ -59,8 +48,5 @@ export class DetailViewComponent implements OnInit {
   setFavorite(reducedData: ReducedData): void {
     this.dataService.addFavoriteItem$(reducedData);
   }
-}
-function mergemap(arg0: (selectedItemData: any) => import("rxjs").Observable<[unknown, ReducedData[]]>): import("rxjs").OperatorFunction<ReducedData | undefined, unknown> {
-  throw new Error('Function not implemented.');
 }
 
