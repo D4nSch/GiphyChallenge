@@ -3,15 +3,15 @@
         <h2>Trending</h2>
         <a routerLink="trending-gifs" class="p-0 h-fit text-xl text-gLight hover:text-gAccent">More Trending Gifs...</a>
     </div>
-    <!-- <carousel [cellWidth]=240 [height]=240>
+    <carousel [cellWidth]=226.6 [height]=226.6 class="md:!block xs:!hidden !hidden">
         <div class="carousel-cell bg-gBackgroundLight border-2 border-gDark" *ngFor="let trendingResult of (trendingResults$ | async)?.images">
             <picture>
                 <source class="w-60 relative" type="image/webp" [src]="trendingResult.preview">
                 <img class="w-60 relative" loading="lazy" [src]="trendingResult.original" [alt]="trendingResult.title">
             </picture>
         </div>
-    </carousel> -->
-    <carousel [cellWidth]=176 [height]=176>
+    </carousel>
+    <carousel [cellWidth]=176 [height]=176 class="md:!hidden !block">
         <div class="carousel-cell bg-gBackgroundLight border-2 border-gDark" *ngFor="let trendingResult of (trendingResults$ | async)?.images">
             <picture>
                 <source class="w-44 relative" type="image/webp" [src]="trendingResult.preview">

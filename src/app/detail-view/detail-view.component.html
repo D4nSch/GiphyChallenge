@@ -1,14 +1,14 @@
 <div *ngIf="detailData" class="fixed top-0 left-0 w-full h-full backdrop-blur z-[10002]">
-    <div class="fixed w-fit top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] px-4">
-        <div class="relative w-fit">
-            <svg xmlns="http://www.w3.org/2000/svg" class="absolute top-[-40px] right-2 fill-gAccent hover:scale-110 w-8" (click)="deselectItem(undefined)" viewBox="0 0 47.97 47.97"><path d="M28.23,24,47.09,5.12A3,3,0,0,0,42.85.88L24,19.74,5.12.88A3,3,0,0,0,.88,5.12L19.74,24,.88,42.85A3,3,0,0,0,3,48a3,3,0,0,0,2.12-.88L24,28.23,42.85,47.09a3,3,0,0,0,4.24-4.24Z"/></svg>
+    <div class="absolute lg:w-[480px] xs:w-[360px] top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] px-4">
+        <div class="relative">
+            <svg xmlns="http://www.w3.org/2000/svg" class="absolute top-[-40px] right-2 fill-gAccent hover:scale-110 w-7" (click)="deselectItem(undefined)" viewBox="0 0 47.97 47.97"><path d="M28.23,24,47.09,5.12A3,3,0,0,0,42.85.88L24,19.74,5.12.88A3,3,0,0,0,.88,5.12L19.74,24,.88,42.85A3,3,0,0,0,3,48a3,3,0,0,0,2.12-.88L24,28.23,42.85,47.09a3,3,0,0,0,4.24-4.24Z"/></svg>
             <div *ngIf="detailData.type === 'video'; else gif">
-                <video class="w-max bg-gBackgroundLight border-2 border-gDark" (click)="deselectItem(undefined)" loop [autoplay]="true" [muted]="false" #detailViewItem>
+                <video class="lg:w-[480px] xs:w-[360px] bg-gBackgroundLight border-2 border-gDark" (click)="deselectItem(undefined)" loop [autoplay]="true" [muted]="false" #detailViewItem>
                     <source [src]="detailData.original">
                 </video>
             </div>
             <ng-template #gif>
-                <img class="w-max bg-gBackgroundLight border-2 border-gDark" (click)="deselectItem(undefined)" [src]="detailData.original" [alt]="detailData.title">
+                <img class="lg:w-[480px] xs:w-[360px] bg-gBackgroundLight border-2 border-gDark" (click)="deselectItem(undefined)" [src]="detailData.original" [alt]="detailData.title">
             </ng-template>
             <svg class="absolute bottom-2 left-2 hover:scale-110 w-8" (click)="setFavorite(detailData)" viewBox="0 0 167.32 148.43">
                 <path ngClass="{{ detailData.favorite ? 'fill-gAccent' : 'light-to-accent' }}" d="M83.66,148.43,10.25,66.74a40,40,0,1,1,59.5-53.47L83.66,28.74,97.57,13.26a40,40,0,0,1,59.51,53.48Z"/>
@@ -20,6 +20,8 @@
                 </ng-template>
             </div>
         </div>
-        <p class="text-xl text-gLight pt-2">{{  detailData.title }}</p>
+        <!-- <div class="bg-gBackgroundLight px-2 mt-2"> -->
+            <p class="text-xl text-gLight pt-2">{{  detailData.title }}</p>
+        <!-- </div> -->
     </div>
 </div>

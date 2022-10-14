@@ -4,7 +4,7 @@
     </div>
     <ngx-masonry [options]="{ gutter: 10 }" #trending>
         <div ngxMasonryItem class="bg-gBackgroundLight border-2 border-gDark min-h-fit mb-2.5" *ngFor="let trendingResult of (trendingResults$ | async)?.images">
-            <img class="w-[171px] min-h-fit" (click)="selectItem(trendingResult)" [src]="trendingResult.original" [alt]="trendingResult.title">
+            <img class="xl:w-[288.5px] lg:w-[309.3px] md:w-[222.6px] xs:w-[171px] min-h-fit" (click)="selectItem(trendingResult)" [src]="trendingResult.original" [alt]="trendingResult.title">
             <svg *ngIf="!trendingResult.favorite; else alreadyFavorite" class="absolute bottom-2 left-2 hover:scale-110 w-8" (click)="setFavorite(trendingResult)" viewBox="0 0 167.32 148.43">
                 <path class="light-to-accent" d="M83.66,148.43,10.25,66.74a40,40,0,1,1,59.5-53.47L83.66,28.74,97.57,13.26a40,40,0,0,1,59.51,53.48Z"/>
             </svg>

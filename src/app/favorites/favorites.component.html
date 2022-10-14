@@ -5,7 +5,7 @@
     </div>
     <ngx-masonry [options]="{ gutter: 10 }" #favorites>
         <div ngxMasonryItem class="bg-gBackgroundLight border-2 border-gDark min-h-fit mb-2.5" *ngFor="let favoriteItem of (favoriteItems$ | async); index as i">
-            <img class="w-[171px] min-h-fit" (click)="selectItem(favoriteItem)" [src]="favoriteItem.preview" [alt]="favoriteItem.title">
+            <img class="xl:w-[288.5px] lg:w-[309.3px] md:w-[222.6px] xs:w-[171px] min-h-fit" (click)="selectItem(favoriteItem)" [src]="favoriteItem.preview" [alt]="favoriteItem.title">
             <svg class="absolute bottom-2 left-2 hover:scale-110 w-9" (click)="removeFavorite(favoriteItem)" viewBox="0 0 354.319 354.319">
                 <path class="light-to-accent" d="M293.765,125.461l-41.574-17.221l17.221-41.574c3.17-7.654-0.464-16.428-8.118-19.599L150.428,1.146
                 C142.775-2.024,134,1.61,130.83,9.264l-17.221,41.574L72.035,33.617c-7.654-3.17-16.428,0.464-19.599,8.118
