@@ -20,7 +20,6 @@ export class GiphyService {
   limit = 25;
   offset = 0;
   totalCount = 0;
-  showLoaderTime = 1000;
 
   constructor(private http: HttpClient, private dataservice: DataService, private loaderService: LoaderService, private notificationService: NotificationService, private dataTransformerService: DataTransformerService) { }
   
@@ -125,7 +124,7 @@ export class GiphyService {
           this.loaderService.show();
         }),
         debounceTime(1000),
-        delay(1000),
+        delay(this.loaderService.showLoaderTime),
         take(1)
       )
       .subscribe(async (reducedGiphyResponse) => {

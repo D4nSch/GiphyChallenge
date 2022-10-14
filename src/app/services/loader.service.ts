@@ -6,6 +6,7 @@ import { BehaviorSubject, Subject } from 'rxjs';
 })
 export class LoaderService {
 
+  showLoaderTime = 1000;
   isLoading = new BehaviorSubject<boolean>(false);
 
   constructor() { }
