@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { combineLatest, debounceTime, delay, forkJoin, map, of, switchMap, take, takeLast, tap } from 'rxjs';
+import { combineLatest, debounce, debounceTime, delay, forkJoin, map, of, switchMap, take, takeLast, tap } from 'rxjs';
 import { GiphyResponseGifs, GiphyResponseClips, ReducedData, Clip } from '../models/giphyresponse';
 import { DataService } from './data.service';
 import { LoaderService } from './loader.service';
@@ -124,7 +124,8 @@ export class GiphyService {
           this.offset = this.offset+reducedGiphyResponse.images.length;
           this.loaderService.show();
         }),
-        delay(this.showLoaderTime),
+        debounceTime(1000),
+        delay(1000),
         take(1)
       )
       .subscribe(async (reducedGiphyResponse) => {
