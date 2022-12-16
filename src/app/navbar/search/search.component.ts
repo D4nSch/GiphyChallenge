@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { NavigationEnd, NavigationStart, Router } from '@angular/router';
-import { debounceTime, distinctUntilChanged, filter, forkJoin, map, mergeMap, Subject, takeUntil, tap } from 'rxjs';
+import { Router } from '@angular/router';
+import { debounceTime, distinctUntilChanged, filter, map, Subject, takeUntil } from 'rxjs';
 import { DataService } from '../../services/data.service';
 
 @Component({
@@ -28,7 +28,6 @@ export class SearchComponent implements OnInit, OnDestroy {
     .subscribe((searchQuery) => {
       console.group("%c GifIt: searchQuery "+"", "color: #43F2A7");
         console.log(searchQuery);
-        // console.log(typeof(searchQuery));
       console.groupEnd();
 
       this.dataservice.setSearchQuery$(searchQuery);

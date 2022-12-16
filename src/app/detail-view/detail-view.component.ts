@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { combineLatest, forkJoin, map, of, Subject, switchMap, takeUntil } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { ReducedData } from '../models/giphyresponse';
 import { DataService } from '../services/data.service';
 

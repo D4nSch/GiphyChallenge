@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { combineLatest, debounce, debounceTime, delay, forkJoin, map, of, switchMap, take, takeLast, tap } from 'rxjs';
-import { GiphyResponseGifs, GiphyResponseClips, ReducedData, Clip } from '../models/giphyresponse';
+import { debounceTime, delay, map, take, tap } from 'rxjs';
+import { GiphyResponseGifs, GiphyResponseClips, ReducedData } from '../models/giphyresponse';
 import { DataService } from './data.service';
 import { LoaderService } from './loader.service';
 import { NotificationService } from './notification.service';

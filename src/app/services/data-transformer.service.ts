@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { of } from 'rxjs';
 import { GiphyResponseClips, GiphyResponseGifs, ReducedData, ReducedGiphyResponse } from '../models/giphyresponse';
 
 @Injectable({

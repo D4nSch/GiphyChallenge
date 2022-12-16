@@ -1,9 +1,9 @@
-import { Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgxMasonryComponent } from 'ngx-masonry';
-import { combineLatest, concat, forkJoin, map, of, Subject, switchMap, take, takeLast, takeUntil, tap, withLatestFrom, zip } from 'rxjs';
+import { combineLatest, map, Subject, takeUntil } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { ReducedData, ReducedGiphyResponse } from '../models/giphyresponse';
+import { ReducedData } from '../models/giphyresponse';
 import { DataTransformerService } from '../services/data-transformer.service';
 import { DataService } from '../services/data.service';
 import { GiphyService } from '../services/giphy.service';
@@ -43,7 +43,6 @@ export class ClipsComponent implements OnInit {
     ])
     .pipe(
       map((result) => this.dataTransformerService.updateFavoriteStatusInitial(result[0], result[1])),
-      // tap(() => {console.log("Clips combinelatest")}),
       takeUntil(this.destroy$)
     )
     .subscribe();

@@ -1,5 +1,5 @@
-import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { combineLatest, filter, map, Observable, of, Subject, switchMap, takeUntil, tap } from 'rxjs';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { combineLatest, filter, map, Subject, switchMap, takeUntil } from 'rxjs';
 import { DataService } from '../services/data.service';
 import { GiphyService } from '../services/giphy.service';
 import { LoaderService } from '../services/loader.service';
@@ -43,7 +43,6 @@ export class SearchResultComponent implements OnInit, OnDestroy {
     ])
     .pipe(
       map((result) => this.dataTransformerService.updateFavoriteStatusInitial(result[0], result[1])),
-      // tap(() => {console.log("SearchResult combinelatest")}),
       takeUntil(this.destroy$)
     )
     .subscribe();

@@ -1,6 +1,6 @@
-import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NgxMasonryComponent } from 'ngx-masonry';
-import { combineLatest, forkJoin, map, of, Subject, switchMap, takeUntil, tap } from 'rxjs';
+import { combineLatest, map, Subject, takeUntil } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { ReducedData } from '../models/giphyresponse';
 import { DataTransformerService } from '../services/data-transformer.service';
